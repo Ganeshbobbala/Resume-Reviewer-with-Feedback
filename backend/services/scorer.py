@@ -291,7 +291,7 @@ def calculate_scores(detected_skills: List[str], raw_text: str, target_role: str
         kw_base += 15
     keyword_score = min(100, round(kw_base))
 
-    # Final Score Formula (Section 15)
+    # Final Score Formula (Preserved exact weights: 40% Skills, 30% Structure, 20% Job Match, 10% Keywords)
     final_score = round(
         (skill_score * 0.40) +
         (section_score * 0.30) +
@@ -299,7 +299,80 @@ def calculate_scores(detected_skills: List[str], raw_text: str, target_role: str
         (keyword_score * 0.10)
     )
 
+    # Detailed Skill Demonstration Attribution
+    from services.skill_taxonomy import extract_skills_detailed
+    detailed_skills = extract_skills_detailed(raw_text)
+    
+    demonstrated_skills = [d for d in detailed_skills if d.get("status") == "demonstrated"]
+    mentioned_only_skills = [d for d in detailed_skills if d.get("status") == "mentioned"]
+
+    # Classify Target Role Requirements into Matched, Insufficiently Demonstrated, and Missing
+    matched_set = {m.lower() for m in matched_skills}
+    demonstrated_names = {d["canonical_name"].lower() for d in demonstrated_skills}
+    
+    insufficiently_demonstrated = []
+    for m in matched_skills:
+        if m.lower() not in demonstrated_names:
+            insufficiently_demonstrated.append(m)
+
+    # Missing evidence notes
+    missing_evidence = []
+    if missing_skills:
+        missing_evidence.append(f"No evidence found for core {target_role} requirements: {', '.join(missing_skills[:3])}.")
+    if insufficiently_demonstrated:
+        missing_evidence.append(f"Listed but lacks demonstrated impact/metrics in Experience section: {', '.join(insufficiently_demonstrated[:3])}.")
+    if not sections.get("projects"):
+        missing_evidence.append("Projects section is missing. Portfolio projects provide vital proof of hands-on ability.")
+
+    # Specific actionable improvement suggestions
+    actionable_suggestions = []
+    if not has_numbers:
+        actionable_suggestions.append("Quantify accomplishments in your bullet points with metrics (e.g. latency reduced by 40%, served 50k users).")
+    if not has_action_verbs:
+        actionable_suggestions.append("Begin experience bullet points with strong active verbs (e.g. 'Architected', 'Engineered', 'Optimized').")
+    if insufficiently_demonstrated:
+        actionable_suggestions.append(f"Incorporate technical details explaining how you used {insufficiently_demonstrated[0]} in your projects.")
+    if missing_skills:
+        actionable_suggestions.append(f"Add projects showcasing experience in {missing_skills[0]} to close role gaps.")
+
+    # Transparent, explainable component breakdown
+    score_breakdown = {
+        "overall_score": final_score,
+        "disclaimer": "Diagnostic suitability score based on transparent heuristic rubrics. Not an official ATS score or guarantee of interview selection.",
+        "components": {
+            "skill_match": {
+                "score": skill_score,
+                "weight": 0.40,
+                "contribution": round(skill_score * 0.40, 1),
+                "explanation": f"Evaluates breadth and depth of skills matching {target_role} requirements."
+            },
+            "resume_structure": {
+                "score": section_score,
+                "weight": 0.30,
+                "contribution": round(section_score * 0.30, 1),
+                "explanation": f"Evaluates presence of critical sections: {core_count}/{len(core_sections)} core sections present."
+            },
+            "role_alignment": {
+                "score": job_match_score,
+                "weight": 0.20,
+                "contribution": round(job_match_score * 0.20, 1),
+                "explanation": f"Direct coverage percentage: {len(matched_skills)} of {total_req} required track competencies matched."
+            },
+            "impact_keywords": {
+                "score": keyword_score,
+                "weight": 0.10,
+                "contribution": round(keyword_score * 0.10, 1),
+                "explanation": f"Evaluates keyword density ({keyword_matches}/{total_req} terms), action verbs ({'yes' if has_action_verbs else 'no'}), and metrics ({'yes' if has_numbers else 'no'})."
+            }
+        },
+        "demonstrated_skills_count": len(demonstrated_skills),
+        "mentioned_only_count": len(mentioned_only_skills),
+        "missing_evidence": missing_evidence,
+        "actionable_suggestions": actionable_suggestions
+    }
+
     return {
+        # Preserved baseline contract
         "resume_score": final_score,
         "skill_score": skill_score,
         "section_score": section_score,
@@ -307,5 +380,13 @@ def calculate_scores(detected_skills: List[str], raw_text: str, target_role: str
         "keyword_score": keyword_score,
         "matched_skills": matched_skills,
         "missing_skills": missing_skills,
-        "sections": sections
+        "sections": sections,
+
+        # New explainable scoring & skill extraction additions
+        "score_breakdown": score_breakdown,
+        "detailed_skills": detailed_skills[:25],
+        "demonstrated_skills": [d["canonical_name"] for d in demonstrated_skills],
+        "insufficiently_demonstrated_skills": insufficiently_demonstrated,
+        "required_skills_count": total_req,
+        "matched_skills_count": len(matched_skills)
     }

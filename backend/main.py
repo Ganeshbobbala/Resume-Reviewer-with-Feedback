@@ -167,7 +167,11 @@ async def analyze_resume(
         "strengths": feedback["strengths"],
         "weaknesses": feedback["weaknesses"],
         "recommendations": feedback["recommendations"],
-        "detailed_feedback": feedback.get("detailed_feedback", {})
+        "detailed_feedback": feedback.get("detailed_feedback", {}),
+        "score_breakdown": scores.get("score_breakdown", {}),
+        "detailed_skills": scores.get("detailed_skills", []),
+        "demonstrated_skills": scores.get("demonstrated_skills", []),
+        "insufficiently_demonstrated_skills": scores.get("insufficiently_demonstrated_skills", [])
     }
 
     # Automatically persist feedback and resume details to Supabase database
@@ -271,7 +275,11 @@ async def analyze_resume_text(
         "strengths": feedback["strengths"],
         "weaknesses": feedback["weaknesses"],
         "recommendations": feedback["recommendations"],
-        "detailed_feedback": feedback.get("detailed_feedback", {})
+        "detailed_feedback": feedback.get("detailed_feedback", {}),
+        "score_breakdown": scores.get("score_breakdown", {}),
+        "detailed_skills": scores.get("detailed_skills", []),
+        "demonstrated_skills": scores.get("demonstrated_skills", []),
+        "insufficiently_demonstrated_skills": scores.get("insufficiently_demonstrated_skills", [])
     }
 
     try:
