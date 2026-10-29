@@ -18,8 +18,15 @@ import {
 } from 'lucide-react';
 import { rewriteBullet } from '../services/api';
 
-export default function DetailedFeedbackCard({ detailedFeedback = {}, targetRole = 'Frontend Developer', recommendations = [] }) {
-  const [activeSubTab, setActiveSubTab] = useState('checklist'); // 'checklist', 'verbs', 'metrics', 'playbook', 'rewriter'
+export default function DetailedFeedbackCard({
+  detailedFeedback = {},
+  targetRole = 'Frontend Developer',
+  recommendations = [],
+  llmFeedback = {},
+  ragCitations = [],
+  scoreBreakdown = {}
+}) {
+  const [activeSubTab, setActiveSubTab] = useState('llm_insights'); // 'llm_insights', 'rag_citations', 'checklist', 'verbs', 'metrics', 'playbook', 'rewriter'
   
   // Bullet rewriter state
   const [bulletInput, setBulletInput] = useState('');
@@ -92,6 +99,30 @@ export default function DetailedFeedbackCard({ detailedFeedback = {}, targetRole
       {/* Sub-Navigation Tabs */}
       <div className="flex flex-wrap gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-bold">
         <button
+          onClick={() => setActiveSubTab('llm_insights')}
+          className={`px-3 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+            activeSubTab === 'llm_insights'
+              ? 'bg-white text-indigo-700 shadow-xs'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+          <span>AI Executive Action Plan</span>
+        </button>
+
+        <button
+          onClick={() => setActiveSubTab('rag_citations')}
+          className={`px-3 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+            activeSubTab === 'rag_citations'
+              ? 'bg-white text-indigo-700 shadow-xs'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <BookOpen className="w-3.5 h-3.5 text-indigo-600" />
+          <span>Grounded RAG Guidance</span>
+        </button>
+
+        <button
           onClick={() => setActiveSubTab('checklist')}
           className={`px-3 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
             activeSubTab === 'checklist'
@@ -156,6 +187,105 @@ export default function DetailedFeedbackCard({ detailedFeedback = {}, targetRole
           <span>AI Bullet Rewriter</span>
         </button>
       </div>
+
+      {/* Tab: AI Executive Action Plan (LLM) */}
+      {activeSubTab === 'llm_insights' && (
+        <div className="space-y-5 animate-in fade-in duration-200">
+          {/* Executive Summary */}
+          {llmFeedback?.resume_summary && (
+            <div className="p-4 rounded-xl bg-gradient-to-r from-indigo-50/90 via-slate-50 to-cyan-50/90 border border-indigo-200/80 space-y-1.5">
+              <span className="text-xs font-bold text-indigo-900 uppercase tracking-wider flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Executive Profile Summary
+              </span>
+              <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+                {llmFeedback.resume_summary}
+              </p>
+            </div>
+          )}
+
+          {/* Prioritized Next Steps */}
+          {llmFeedback?.prioritized_next_steps?.length > 0 && (
+            <div className="space-y-2.5">
+              <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                <TrendingUp className="w-3.5 h-3.5 text-indigo-600" /> Prioritized Next Steps
+              </h4>
+              <div className="space-y-2">
+                {llmFeedback.prioritized_next_steps.map((step, idx) => (
+                  <div key={idx} className="p-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-800 flex items-start gap-2.5 shadow-2xs">
+                    <span className="w-5 h-5 rounded-full bg-indigo-600 text-white text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                      {idx + 1}
+                    </span>
+                    <span className="leading-relaxed font-medium">{step.replace(/^\d+\.\s*/, '')}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Section by Section Suggestions */}
+          {llmFeedback?.section_suggestions?.length > 0 && (
+            <div className="space-y-2.5 pt-2">
+              <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                <Layers className="w-3.5 h-3.5 text-indigo-600" /> Section-by-Section Enhancement Guide
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {llmFeedback.section_suggestions.map((item, idx) => (
+                  <div key={idx} className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1.5">
+                    <span className="font-bold text-slate-900 block text-xs">{item.section}</span>
+                    <p className="text-slate-600 text-[11px] leading-relaxed">
+                      <span className="font-semibold text-rose-700 mr-1">Critique:</span>
+                      {item.critique}
+                    </p>
+                    <p className="text-slate-700 text-[11px] leading-relaxed font-medium bg-white p-2 rounded-lg border border-slate-100">
+                      <span className="font-semibold text-indigo-700 mr-1">Action:</span>
+                      {item.recommendation}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Boundaries Disclaimer */}
+          <div className="p-3 rounded-xl bg-slate-100/70 border border-slate-200 text-[11px] text-slate-500 italic">
+            {llmFeedback?.limitations_and_uncertainty ||
+              "Heuristic analysis based on supplied resume text. Does not guarantee interview selection."}
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Grounded RAG Guidance Citations */}
+      {activeSubTab === 'rag_citations' && (
+        <div className="space-y-4 animate-in fade-in duration-200">
+          <div className="p-3.5 rounded-xl bg-indigo-50/60 border border-indigo-100 text-xs text-indigo-950 space-y-1">
+            <span className="font-bold flex items-center gap-1.5">
+              <BookOpen className="w-4 h-4 text-indigo-600" /> Evidence-Grounded Career Knowledge
+            </span>
+            <p className="text-[11px] text-indigo-900/80">
+              Recommendations are dynamically retrieved from verified hiring rubrics and Ivy League career service standards.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            {((ragCitations && ragCitations.length > 0) ? ragCitations : (llmFeedback?.rag_citations || [])).map((cite, idx) => (
+              <div key={idx} className="p-4 rounded-xl bg-white border border-slate-200 space-y-2 shadow-2xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-slate-100 pb-2">
+                  <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600" />
+                    {cite.source_title || cite.title}
+                  </span>
+                  <span className="text-[10px] font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200 self-start sm:self-auto">
+                    {cite.section}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-700 leading-relaxed font-sans font-medium">
+                  {cite.key_principle || cite.content}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Tab 1: Priority Action Checklist */}
       {activeSubTab === 'checklist' && (

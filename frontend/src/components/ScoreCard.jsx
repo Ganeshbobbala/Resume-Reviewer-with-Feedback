@@ -1,13 +1,16 @@
-import React from 'react';
-import { Award, Zap, Layers, Target, Search } from 'lucide-react';
+import React, { useState } from 'react';
+import { Award, Zap, Layers, Target, Search, Info, ChevronDown, ChevronUp, AlertCircle, ShieldCheck } from 'lucide-react';
 
 export default function ScoreCard({
   score,
   skillScore,
   sectionScore,
   jobMatchScore,
-  keywordScore
+  keywordScore,
+  scoreBreakdown = {}
 }) {
+  const [showExplanation, setShowExplanation] = useState(false);
+
   let statusText = 'Poor';
   let statusColorClass = 'text-rose-700 bg-rose-50 border-rose-200';
   let strokeColor = '#f43f5e'; // rose-500
@@ -30,6 +33,8 @@ export default function ScoreCard({
   const radius = 54;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (score / 100) * circumference;
+
+  const components = scoreBreakdown.components || {};
 
   return (
     <div className="bg-white/95 backdrop-blur-md rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between space-y-6">
@@ -103,6 +108,56 @@ export default function ScoreCard({
           </span>
           <span className="font-bold text-slate-900 text-sm">{keywordScore} / 100</span>
         </div>
+      </div>
+
+      {/* Explainable Scoring Expander */}
+      <div className="border-t border-slate-100 pt-3">
+        <button
+          onClick={() => setShowExplanation(!showExplanation)}
+          className="w-full flex items-center justify-between text-xs font-bold text-indigo-700 hover:text-indigo-800 transition-colors py-1 cursor-pointer"
+        >
+          <span className="flex items-center gap-1.5">
+            <ShieldCheck className="w-4 h-4 text-indigo-600" />
+            Transparent Scoring Breakdown
+          </span>
+          {showExplanation ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
+
+        {showExplanation && (
+          <div className="mt-3 p-3.5 rounded-xl bg-indigo-50/50 border border-indigo-100 text-xs space-y-3 animate-in fade-in duration-200">
+            <div className="space-y-2">
+              {components.skill_match && (
+                <div className="flex justify-between items-start">
+                  <span className="text-slate-600 font-medium">Skills Component (40%):</span>
+                  <span className="font-bold text-slate-900">{components.skill_match.contribution} pts</span>
+                </div>
+              )}
+              {components.resume_structure && (
+                <div className="flex justify-between items-start">
+                  <span className="text-slate-600 font-medium">Structure Component (30%):</span>
+                  <span className="font-bold text-slate-900">{components.resume_structure.contribution} pts</span>
+                </div>
+              )}
+              {components.role_alignment && (
+                <div className="flex justify-between items-start">
+                  <span className="text-slate-600 font-medium">Role Alignment (20%):</span>
+                  <span className="font-bold text-slate-900">{components.role_alignment.contribution} pts</span>
+                </div>
+              )}
+              {components.impact_keywords && (
+                <div className="flex justify-between items-start">
+                  <span className="text-slate-600 font-medium">Keywords & Verbs (10%):</span>
+                  <span className="font-bold text-slate-900">{components.impact_keywords.contribution} pts</span>
+                </div>
+              )}
+            </div>
+
+            <p className="text-[11px] text-slate-500 italic border-t border-indigo-100 pt-2 leading-relaxed">
+              {scoreBreakdown.disclaimer ||
+                "Diagnostic suitability score based on transparent heuristic rubrics. Not an official ATS score or guarantee of interview selection."}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

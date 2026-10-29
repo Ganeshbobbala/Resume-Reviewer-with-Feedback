@@ -1,5 +1,24 @@
 import React, { useState } from 'react';
-import { Target, FileText, Check, X, AlertCircle, Loader2, Sparkles, Award, Zap, BookOpen, Clock, Lightbulb, RefreshCw } from 'lucide-react';
+import {
+  Target,
+  FileText,
+  Check,
+  X,
+  AlertCircle,
+  Loader2,
+  Sparkles,
+  Award,
+  Zap,
+  BookOpen,
+  Clock,
+  Lightbulb,
+  RefreshCw,
+  Cpu,
+  ThumbsUp,
+  ThumbsDown,
+  Layers,
+  Quote
+} from 'lucide-react';
 import { matchJobDescription } from '../services/api';
 
 export default function JobDescriptionMatcher({ selectedFile, setSelectedFile }) {
@@ -7,6 +26,7 @@ export default function JobDescriptionMatcher({ selectedFile, setSelectedFile })
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState(null);
+  const [feedbackGiven, setFeedbackGiven] = useState(null);
 
   const handleAnalyze = async () => {
     if (!selectedFile) {
@@ -21,6 +41,7 @@ export default function JobDescriptionMatcher({ selectedFile, setSelectedFile })
 
     setError('');
     setIsLoading(true);
+    setFeedbackGiven(null);
 
     try {
       const data = await matchJobDescription(selectedFile, jobDescription);
@@ -50,7 +71,7 @@ export default function JobDescriptionMatcher({ selectedFile, setSelectedFile })
           Job Description Matcher
         </h2>
         <p className="text-sm sm:text-base text-slate-600 max-w-xl mx-auto">
-          Compare your resume against a specific job description to discover your strengths and skill gaps.
+          Compare your resume against a specific job description with hybrid semantic matching, requirement evidence attribution, and skill gap discovery.
         </p>
       </div>
 
@@ -156,7 +177,12 @@ export default function JobDescriptionMatcher({ selectedFile, setSelectedFile })
           {/* Main Score Header Card */}
           <div className="bg-white/95 backdrop-blur-md rounded-2xl p-8 border border-slate-200 shadow-sm text-center space-y-4">
             <div className="flex items-center justify-center space-x-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Job Match Score</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Hybrid Match Score</span>
+              {result.embedding_mode && (
+                <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200 inline-flex items-center gap-1">
+                  <Cpu className="w-3 h-3 text-indigo-600" /> {result.embedding_mode}
+                </span>
+              )}
             </div>
 
             <div className="flex flex-col items-center justify-center">
@@ -168,67 +194,90 @@ export default function JobDescriptionMatcher({ selectedFile, setSelectedFile })
               </span>
             </div>
 
-            <p className="text-xs text-slate-500 italic max-w-md mx-auto">
-              This score represents the alignment between your resume and the specified job description.
-            </p>
+            {/* Semantic vs Lexical Breakdown Cards */}
+            {result.semantic_score !== undefined && (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 max-w-xl mx-auto text-left text-xs">
+                <div className="p-3 rounded-xl bg-indigo-50/60 border border-indigo-100">
+                  <span className="text-indigo-900 font-bold block flex items-center gap-1">
+                    <Sparkles className="w-3.5 h-3.5 text-indigo-600" /> Dense Semantic
+                  </span>
+                  <span className="text-xl font-black text-indigo-700">{result.semantic_score}%</span>
+                  <span className="text-[10px] text-slate-500 block mt-0.5">Vector conceptual alignment</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-violet-50/60 border border-violet-100">
+                  <span className="text-violet-900 font-bold block flex items-center gap-1">
+                    <Zap className="w-3.5 h-3.5 text-violet-600" /> Lexical TF-IDF
+                  </span>
+                  <span className="text-xl font-black text-violet-700">{result.lexical_score}%</span>
+                  <span className="text-[10px] text-slate-500 block mt-0.5">Exact keyword frequency</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-emerald-50/60 border border-emerald-100">
+                  <span className="text-emerald-900 font-bold block flex items-center gap-1">
+                    <Check className="w-3.5 h-3.5 text-emerald-600" /> Verified Skills
+                  </span>
+                  <span className="text-xl font-black text-emerald-700">{result.skill_match}%</span>
+                  <span className="text-[10px] text-slate-500 block mt-0.5">Taxonomy overlap</span>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Job Match Breakdown Progress Bars */}
-          <div className="bg-white/95 backdrop-blur-md rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5">
-            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-              <Award className="w-5 h-5 text-indigo-600" /> Job Match Breakdown
-            </h3>
-
-            <div className="space-y-4 text-xs sm:text-sm">
-              {/* Skill Match (40%) */}
-              <div className="space-y-1.5">
-                <div className="flex justify-between font-semibold">
-                  <span className="text-slate-700">Skill Match (40%)</span>
-                  <span className="text-indigo-600 font-bold">{result.skill_match}%</span>
-                </div>
-                <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-                  <div className="h-full bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-full transition-all duration-700" style={{ width: `${result.skill_match}%` }} />
-                </div>
+          {/* Evidence-Backed Requirement Breakdown */}
+          {result.requirement_breakdown && result.requirement_breakdown.length > 0 && (
+            <div className="bg-white/95 backdrop-blur-md rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <Layers className="w-5 h-5 text-indigo-600" /> Evidence-Backed Requirement Breakdown
+                </h3>
+                <span className="text-xs text-slate-500">
+                  {result.matched_requirements_count || 0} Matched • {result.partially_matched_count || 0} Partial • {result.missing_requirements_count || 0} Missing
+                </span>
               </div>
 
-              {/* Keyword Match (25%) */}
-              <div className="space-y-1.5">
-                <div className="flex justify-between font-semibold">
-                  <span className="text-slate-700">Keyword Match (25%)</span>
-                  <span className="text-indigo-600 font-bold">{result.keyword_match}%</span>
-                </div>
-                <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-                  <div className="h-full bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full transition-all duration-700" style={{ width: `${result.keyword_match}%` }} />
-                </div>
-              </div>
+              <div className="space-y-3">
+                {result.requirement_breakdown.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className={`p-4 rounded-xl border text-xs space-y-2 transition-colors ${
+                      item.status === 'matched'
+                        ? 'bg-emerald-50/40 border-emerald-200/80'
+                        : item.status === 'partially_demonstrated'
+                        ? 'bg-amber-50/40 border-amber-200/80'
+                        : 'bg-rose-50/40 border-rose-200/80'
+                    }`}
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <span className="font-bold text-slate-900 text-sm">{item.requirement}</span>
+                      <span
+                        className={`text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full border self-start sm:self-auto shrink-0 ${
+                          item.status === 'matched'
+                            ? 'text-emerald-700 bg-emerald-100/70 border-emerald-300'
+                            : item.status === 'partially_demonstrated'
+                            ? 'text-amber-800 bg-amber-100/70 border-amber-300'
+                            : 'text-rose-700 bg-rose-100/70 border-rose-300'
+                        }`}
+                      >
+                        {item.status === 'matched' ? '✓ Matched' : item.status === 'partially_demonstrated' ? '~ Partial' : '✗ Missing'}
+                      </span>
+                    </div>
 
-              {/* Experience Match (15%) */}
-              <div className="space-y-1.5">
-                <div className="flex justify-between font-semibold">
-                  <span className="text-slate-700">Experience Match (15%)</span>
-                  <span className="text-indigo-600 font-bold">{result.experience_match}%</span>
-                </div>
-                <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-                  <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-700" style={{ width: `${result.experience_match}%` }} />
-                </div>
-              </div>
-
-              {/* Education Match (10%) */}
-              <div className="space-y-1.5">
-                <div className="flex justify-between font-semibold">
-                  <span className="text-slate-700">Education Match (10%)</span>
-                  <span className="text-indigo-600 font-bold">{result.education_match}%</span>
-                </div>
-                <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-                  <div className="h-full bg-gradient-to-r from-sky-500 to-indigo-500 rounded-full transition-all duration-700" style={{ width: `${result.education_match}%` }} />
-                </div>
+                    <div className="flex items-start gap-1.5 text-slate-600 bg-white/70 p-2.5 rounded-lg border border-slate-200">
+                      <Quote className="w-3.5 h-3.5 text-indigo-500 shrink-0 mt-0.5" />
+                      <div className="text-[11px] leading-relaxed">
+                        <span className="font-bold text-slate-700 mr-1">Supporting Excerpt ({item.supporting_section}):</span>
+                        <span className="italic">{item.supporting_excerpt}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
+          )}
 
           {/* Matched vs Missing Skills Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {/* Matched Skills */}
             <div className="bg-white/95 backdrop-blur-md rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
               <h4 className="text-xs font-bold text-emerald-800 uppercase tracking-wider flex items-center gap-1.5">
                 <Check className="w-4 h-4 text-emerald-600" /> Matched Skills ({result.matched_skills.length})
@@ -246,7 +295,6 @@ export default function JobDescriptionMatcher({ selectedFile, setSelectedFile })
               </div>
             </div>
 
-            {/* Missing Skills / Skills to Consider */}
             <div className="bg-white/95 backdrop-blur-md rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
               <h4 className="text-xs font-bold text-amber-800 uppercase tracking-wider flex items-center gap-1.5">
                 <X className="w-4 h-4 text-amber-600" /> Skills to Consider ({result.missing_skills.length})
@@ -262,20 +310,17 @@ export default function JobDescriptionMatcher({ selectedFile, setSelectedFile })
                   <p className="text-xs text-emerald-700 font-medium">All key role skills found in resume!</p>
                 )}
               </div>
-              <p className="text-[11px] text-slate-500 italic pt-1">
-                Consider learning or highlighting these skills if you have genuine experience with them.
-              </p>
             </div>
           </div>
 
           {/* Recommendations Card */}
           <div className="bg-white/95 backdrop-blur-md rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
             <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-              <Lightbulb className="w-5 h-5 text-amber-500" /> How to Improve Your Match
+              <Lightbulb className="w-5 h-5 text-amber-500" /> Actionable Recommendations
             </h3>
             <div className="space-y-2 text-xs sm:text-sm">
               {result.recommendations.map((rec, idx) => (
-                <div key={idx} className="flex items-start space-x-3 bg-slate-50 hover:bg-slate-100/70 p-3.5 rounded-xl border border-slate-200 transition-colors">
+                <div key={idx} className="flex items-start space-x-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
                   <span className="w-5 h-5 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                     {idx + 1}
                   </span>
@@ -284,9 +329,33 @@ export default function JobDescriptionMatcher({ selectedFile, setSelectedFile })
               ))}
             </div>
           </div>
+
+          {/* User Feedback Controls */}
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <span className="text-slate-600 font-medium">Was this semantic match analysis helpful and accurate?</span>
+            {feedbackGiven ? (
+              <span className="text-emerald-700 font-bold bg-emerald-50 px-3 py-1 rounded-lg border border-emerald-200">
+                ✓ Thank you for your feedback!
+              </span>
+            ) : (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setFeedbackGiven('positive')}
+                  className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300 text-slate-700 font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <ThumbsUp className="w-3.5 h-3.5 text-emerald-600" /> Accurate
+                </button>
+                <button
+                  onClick={() => setFeedbackGiven('negative')}
+                  className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-slate-700 font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <ThumbsDown className="w-3.5 h-3.5 text-rose-600" /> Needs Improvement
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
   );
 }
-

@@ -250,6 +250,7 @@ export default function App() {
                 sectionScore={result.section_score}
                 jobMatchScore={result.job_match_score}
                 keywordScore={result.keyword_score}
+                scoreBreakdown={result.score_breakdown}
               />
               <JobMatchCard
                 targetRole={result.target_role}
@@ -271,7 +272,10 @@ export default function App() {
 
             {/* Row 3: Strengths & Areas to Improve */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <StrengthsCard strengths={result.strengths} />
+              <StrengthsCard
+                strengths={result.strengths}
+                verifiedStrengths={result.llm_feedback?.verified_strengths}
+              />
               <WeaknessesCard weaknesses={result.weaknesses} />
             </div>
 
@@ -283,6 +287,9 @@ export default function App() {
               detailedFeedback={result.detailed_feedback}
               targetRole={result.target_role}
               recommendations={result.recommendations}
+              llmFeedback={result.llm_feedback}
+              ragCitations={result.rag_citations}
+              scoreBreakdown={result.score_breakdown}
             />
 
             {/* Bottom Navigation Buttons */}
