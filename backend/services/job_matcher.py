@@ -1,3 +1,4 @@
+import os
 import re
 from typing import List, Dict, Any
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -51,12 +52,24 @@ def extract_years_experience(text: str) -> str:
 def analyze_job_match(resume_text: str, job_description: str) -> Dict[str, Any]:
     """
     Compares resume text with job description text and returns explainable match metrics.
+    Integrates hybrid semantic matching with dense embeddings, evidence attribution,
+    and backwards compatible TF-IDF lexical fallback.
     """
     if not job_description or len(job_description.strip()) < 20:
         raise ValueError("Job description is too short or empty. Please provide a detailed job description.")
 
     if len(job_description) > 10000:
         job_description = job_description[:10000]
+
+    # Check feature flag for semantic matching (defaults to True)
+    use_semantic = os.environ.get("ENABLE_SEMANTIC_MATCHING", "true").lower() == "true"
+    if use_semantic:
+        try:
+            from services.semantic_matcher import compute_semantic_matching
+            return compute_semantic_matching(resume_text, job_description)
+        except Exception as e:
+            # Fall back safely to standard lexical matcher
+            pass
 
     # 1. Skill Match (40%)
     jd_skills = extract_skills(job_description)

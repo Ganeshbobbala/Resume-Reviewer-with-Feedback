@@ -88,9 +88,12 @@ SKILL_PATTERNS = {
     "Product Management": [r'\bproduct\s*management\b', r'\bproduct\s*roadmap\b']
 }
 
+from services.skill_taxonomy import extract_skills_detailed, extract_canonical_skills, SKILL_TAXONOMY
+
 def extract_skills(raw_text: str) -> List[str]:
     """
     Extracts canonical skill names from raw resume text.
+    Combines legacy pattern matching with rich taxonomy alias resolution.
     Returns a sorted list of unique detected skills formatted nicely.
     """
     if not raw_text:
@@ -99,10 +102,16 @@ def extract_skills(raw_text: str) -> List[str]:
     text_lower = raw_text.lower()
     detected: Set[str] = set()
     
+    # 1. Check legacy patterns for backward compatibility
     for skill_name, patterns in SKILL_PATTERNS.items():
         for pattern in patterns:
             if re.search(pattern, text_lower):
                 detected.add(skill_name)
                 break
                 
+    # 2. Check canonical taxonomy
+    canonical = extract_canonical_skills(raw_text)
+    for c in canonical:
+        detected.add(c)
+        
     return sorted(list(detected))
