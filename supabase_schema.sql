@@ -41,3 +41,4 @@ ON public.resume_reviews
 FOR INSERT 
 TO anon, authenticated 
 WITH CHECK (true);
+

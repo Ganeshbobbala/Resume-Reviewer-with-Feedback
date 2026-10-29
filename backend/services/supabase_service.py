@@ -96,3 +96,4 @@ def get_review_by_id(review_id: str) -> Optional[Dict[str, Any]]:
     except Exception as e:
         logger.error(f"Error fetching review {review_id} from Supabase: {e}")
         return None
+
