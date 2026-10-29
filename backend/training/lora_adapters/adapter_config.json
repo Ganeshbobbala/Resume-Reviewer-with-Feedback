@@ -1,0 +1,30 @@
+{
+  "status": "dry_run_validated",
+  "base_model": "HuggingFaceTB/SmolLM-135M-Instruct",
+  "lora_parameters": {
+    "r": 8,
+    "lora_alpha": 16,
+    "lora_dropout": 0.05,
+    "target_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "task_type": "CAUSAL_LM"
+  },
+  "hyperparameters": {
+    "learning_rate": 0.0002,
+    "batch_size": 1,
+    "gradient_accumulation_steps": 4,
+    "weight_decay": 0.01,
+    "warmup_ratio": 0.03
+  },
+  "environment": {
+    "python_version": "3.14.3",
+    "torch_version": "2.15.0+cpu",
+    "device": "cpu",
+    "cuda_available": false,
+    "gpu_name": "None (CPU Execution)",
+    "vram_gb": 0.0,
+    "recommended_model": "Qwen/Qwen2.5-0.5B-Instruct"
+  }
+}
