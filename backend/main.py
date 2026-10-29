@@ -11,6 +11,7 @@ from services.predictor import predictor_service
 from services.skill_extractor import extract_skills
 from services.scorer import calculate_scores, ROLE_SKILLS
 from services.feedback import generate_feedback, generate_bullet_rewrites
+from services.llm_feedback import generate_enhanced_llm_feedback
 from services.job_matcher import analyze_job_match
 from services.format_analyzer import analyze_resume_format
 from services.supabase_service import (
@@ -148,6 +149,18 @@ async def analyze_resume(
         scores=scores
     )
 
+    llm_feedback = generate_enhanced_llm_feedback(
+        raw_text=extracted_text,
+        target_role=target_role_to_use,
+        detected_skills=detected_skills,
+        matched_skills=scores["matched_skills"],
+        missing_skills=scores["missing_skills"],
+        demonstrated_skills=scores.get("demonstrated_skills", []),
+        insufficiently_demonstrated=scores.get("insufficiently_demonstrated_skills", []),
+        sections=scores["sections"],
+        scores=scores
+    )
+
     result = {
         "filename": clean_filename,
         "extracted_text": extracted_text,
@@ -171,7 +184,10 @@ async def analyze_resume(
         "score_breakdown": scores.get("score_breakdown", {}),
         "detailed_skills": scores.get("detailed_skills", []),
         "demonstrated_skills": scores.get("demonstrated_skills", []),
-        "insufficiently_demonstrated_skills": scores.get("insufficiently_demonstrated_skills", [])
+        "insufficiently_demonstrated_skills": scores.get("insufficiently_demonstrated_skills", []),
+        "llm_feedback": llm_feedback,
+        "bullet_rewrites": llm_feedback.get("bullet_rewrites", []),
+        "rag_citations": llm_feedback.get("rag_citations", [])
     }
 
     # Automatically persist feedback and resume details to Supabase database
@@ -257,6 +273,18 @@ async def analyze_resume_text(
         scores=scores
     )
 
+    llm_feedback = generate_enhanced_llm_feedback(
+        raw_text=extracted_text,
+        target_role=target_role_to_use,
+        detected_skills=detected_skills,
+        matched_skills=scores["matched_skills"],
+        missing_skills=scores["missing_skills"],
+        demonstrated_skills=scores.get("demonstrated_skills", []),
+        insufficiently_demonstrated=scores.get("insufficiently_demonstrated_skills", []),
+        sections=scores["sections"],
+        scores=scores
+    )
+
     result = {
         "extracted_text": extracted_text,
         "predicted_category": predicted_category,
@@ -279,7 +307,10 @@ async def analyze_resume_text(
         "score_breakdown": scores.get("score_breakdown", {}),
         "detailed_skills": scores.get("detailed_skills", []),
         "demonstrated_skills": scores.get("demonstrated_skills", []),
-        "insufficiently_demonstrated_skills": scores.get("insufficiently_demonstrated_skills", [])
+        "insufficiently_demonstrated_skills": scores.get("insufficiently_demonstrated_skills", []),
+        "llm_feedback": llm_feedback,
+        "bullet_rewrites": llm_feedback.get("bullet_rewrites", []),
+        "rag_citations": llm_feedback.get("rag_citations", [])
     }
 
     try:
