@@ -1,9 +1,10 @@
 from typing import Optional
 from pydantic import BaseModel
-from fastapi import FastAPI, File, UploadFile, Form, HTTPException, status
+from fastapi import FastAPI, File, UploadFile, Form, HTTPException, status, Request, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import uvicorn
+import logging
 
 from services.resume_parser import extract_text_from_pdf
 from services.predictor import predictor_service
@@ -12,24 +13,38 @@ from services.scorer import calculate_scores, ROLE_SKILLS
 from services.feedback import generate_feedback, generate_bullet_rewrites
 from services.job_matcher import analyze_job_match
 from services.format_analyzer import analyze_resume_format
-from services.supabase_service import save_resume_review, get_recent_reviews, get_review_by_id
+from services.supabase_service import (
+    save_resume_review,
+    get_recent_reviews,
+    get_review_by_id,
+    delete_review_by_id
+)
+from services.security_validator import (
+    validate_uploaded_file,
+    sanitize_filename,
+    check_rate_limit,
+    get_allowed_origins,
+    sanitize_error_message,
+    MAX_FILE_SIZE
+)
+
+logger = logging.getLogger("main")
 
 app = FastAPI(
     title="Resume Reviewer API",
     description="AI-Powered Resume Analysis, Job Matcher, and Format Verification Engine",
-    version="1.1.0"
+    version="1.2.0"
 )
 
-# Configure CORS to allow local development and deployed Vercel domains
+# Secure configurable CORS
+allowed_origins = get_allowed_origins()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
-    allow_methods=["*"],
+    allow_origins=allowed_origins if allowed_origins != ["*"] else ["*"],
+    allow_credentials=True if allowed_origins != ["*"] else False,
+    allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
-
-MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
 
 def detect_best_fit_role(detected_skills: list, raw_text: str, predicted_category: str) -> str:
     """
@@ -77,27 +92,28 @@ def read_root():
 # =========================================================================
 @app.post("/analyze-resume")
 async def analyze_resume(
+    request: Request,
     file: UploadFile = File(...),
-    target_role: Optional[str] = Form(None)
+    target_role: Optional[str] = Form(None),
+    x_user_id: Optional[str] = Header(None),
+    authorization: Optional[str] = Header(None)
 ):
-    if not file.filename.lower().endswith(".pdf"):
+    client_ip = request.client.host if request.client else "127.0.0.1"
+    if not check_rate_limit(client_ip):
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid file format. Only PDF files are supported."
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Rate limit exceeded. Please wait a moment before analyzing another resume."
         )
 
     contents = await file.read()
-    if len(contents) == 0:
+    is_valid, err_msg = validate_uploaded_file(file.filename, contents, allowed_extensions=(".pdf",))
+    if not is_valid:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Uploaded file is empty."
-        )
-    if len(contents) > MAX_FILE_SIZE:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="File size exceeds maximum limit of 10 MB."
+            detail=err_msg
         )
 
+    clean_filename = sanitize_filename(file.filename)
     valid_roles = list(ROLE_SKILLS.keys())
     
     is_auto_role = False
@@ -133,7 +149,7 @@ async def analyze_resume(
     )
 
     result = {
-        "filename": file.filename,
+        "filename": clean_filename,
         "extracted_text": extracted_text,
         "predicted_category": predicted_category,
         "target_role": target_role_to_use,
@@ -156,8 +172,9 @@ async def analyze_resume(
 
     # Automatically persist feedback and resume details to Supabase database
     try:
+        auth_token = authorization.replace("Bearer ", "") if authorization else None
         db_saved = save_resume_review({
-            "filename": file.filename,
+            "filename": clean_filename,
             "target_role": target_role_to_use,
             "predicted_category": predicted_category,
             "overall_score": scores["resume_score"],
@@ -168,13 +185,14 @@ async def analyze_resume(
             "recommendations": feedback["recommendations"],
             "bullet_rewrites": [],
             "format_analysis": {},
-            "raw_text": extracted_text[:8000]
-        })
+            "raw_text": extracted_text[:8000],
+            "user_id": x_user_id
+        }, auth_token=auth_token)
         if db_saved and "id" in db_saved:
             result["db_id"] = db_saved["id"]
             result["db_stored"] = True
     except Exception as e:
-        print(f"Supabase store notice: {e}")
+        logger.warning(f"Supabase store notice: {sanitize_error_message(e)}")
 
     return result
 
@@ -186,7 +204,19 @@ class ResumeTextPayload(BaseModel):
     target_role: Optional[str] = None
 
 @app.post("/analyze-text")
-async def analyze_resume_text(payload: ResumeTextPayload):
+async def analyze_resume_text(
+    payload: ResumeTextPayload,
+    request: Request,
+    x_user_id: Optional[str] = Header(None),
+    authorization: Optional[str] = Header(None)
+):
+    client_ip = request.client.host if request.client else "127.0.0.1"
+    if not check_rate_limit(client_ip):
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Rate limit exceeded. Please wait a moment."
+        )
+
     extracted_text = payload.resume_text
     target_role = payload.target_role
 
@@ -245,6 +275,7 @@ async def analyze_resume_text(payload: ResumeTextPayload):
     }
 
     try:
+        auth_token = authorization.replace("Bearer ", "") if authorization else None
         db_saved = save_resume_review({
             "filename": "live_editor_resume.txt",
             "target_role": target_role_to_use,
@@ -257,13 +288,14 @@ async def analyze_resume_text(payload: ResumeTextPayload):
             "recommendations": feedback["recommendations"],
             "bullet_rewrites": [],
             "format_analysis": {},
-            "raw_text": extracted_text[:8000]
-        })
+            "raw_text": extracted_text[:8000],
+            "user_id": x_user_id
+        }, auth_token=auth_token)
         if db_saved and "id" in db_saved:
             result["db_id"] = db_saved["id"]
             result["db_stored"] = True
     except Exception as e:
-        print(f"Supabase store notice: {e}")
+        logger.warning(f"Supabase store notice: {sanitize_error_message(e)}")
 
     return result
 
@@ -285,17 +317,19 @@ async def rewrite_bullet_endpoint(payload: RewriteBulletPayload):
     return {"original": payload.bullet, "variations": variations}
 
 # =========================================================================
-# ENDPOINT 2: /match-job (New Feature: Job Description Matcher)
+# ENDPOINT 2: /match-job (Job Description Matcher)
 # =========================================================================
 @app.post("/match-job")
 async def match_job_description(
+    request: Request,
     file: UploadFile = File(...),
     job_description: str = Form(...)
 ):
-    if not file.filename.lower().endswith(".pdf"):
+    client_ip = request.client.host if request.client else "127.0.0.1"
+    if not check_rate_limit(client_ip):
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid file format. Only PDF files are supported."
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Rate limit exceeded. Please wait a moment."
         )
 
     if not job_description or len(job_description.strip()) < 15:
@@ -305,15 +339,11 @@ async def match_job_description(
         )
 
     contents = await file.read()
-    if len(contents) == 0:
+    is_valid, err_msg = validate_uploaded_file(file.filename, contents, allowed_extensions=(".pdf",))
+    if not is_valid:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Uploaded file is empty."
-        )
-    if len(contents) > MAX_FILE_SIZE:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="File size exceeds maximum limit of 10 MB."
+            detail=err_msg
         )
 
     extracted_text, parse_error = extract_text_from_pdf(contents)
@@ -327,59 +357,82 @@ async def match_job_description(
         match_result = analyze_job_match(extracted_text, job_description)
         return match_result
     except ValueError as ve:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=sanitize_error_message(ve))
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Job matching failed: {str(e)}")
+        logger.error(f"Job matching error: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Job matching failed: {sanitize_error_message(e)}")
 
 # =========================================================================
-# ENDPOINT 3: /analyze-format (New Feature: Resume Format Analyzer)
+# ENDPOINT 3: /analyze-format (Resume Format Analyzer)
 # =========================================================================
 @app.post("/analyze-format")
 async def analyze_format(
+    request: Request,
     file: UploadFile = File(...)
 ):
-    if not file.filename.lower().endswith(".pdf"):
+    client_ip = request.client.host if request.client else "127.0.0.1"
+    if not check_rate_limit(client_ip):
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid file format. Only PDF files are supported."
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Rate limit exceeded. Please wait a moment."
         )
 
     contents = await file.read()
-    if len(contents) == 0:
+    is_valid, err_msg = validate_uploaded_file(file.filename, contents, allowed_extensions=(".pdf",))
+    if not is_valid:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Uploaded file is empty."
-        )
-    if len(contents) > MAX_FILE_SIZE:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="File size exceeds maximum limit of 10 MB."
+            detail=err_msg
         )
 
     try:
         format_result = analyze_resume_format(contents)
         return format_result
     except ValueError as ve:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(ve))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=sanitize_error_message(ve))
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Format analysis failed: {str(e)}")
+        logger.error(f"Format analysis error: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Format analysis failed: {sanitize_error_message(e)}")
 
 # =========================================================================
 # ENDPOINTS: /history & /history/{review_id} (Supabase Database Persistence)
 # =========================================================================
 @app.get("/history")
-def get_resume_history(limit: int = 20):
-    """Fetches stored resume reviews from Supabase."""
-    reviews = get_recent_reviews(limit=limit)
+def get_resume_history(
+    limit: int = 20,
+    x_user_id: Optional[str] = Header(None),
+    authorization: Optional[str] = Header(None)
+):
+    """Fetches stored resume reviews from Supabase with user ownership scoping."""
+    auth_token = authorization.replace("Bearer ", "") if authorization else None
+    reviews = get_recent_reviews(limit=limit, user_id=x_user_id, auth_token=auth_token)
     return {"reviews": reviews, "total": len(reviews)}
 
 @app.get("/history/{review_id}")
-def get_resume_history_detail(review_id: str):
+def get_resume_history_detail(
+    review_id: str,
+    x_user_id: Optional[str] = Header(None),
+    authorization: Optional[str] = Header(None)
+):
     """Fetches full details of a specific resume review from Supabase."""
-    record = get_review_by_id(review_id)
+    auth_token = authorization.replace("Bearer ", "") if authorization else None
+    record = get_review_by_id(review_id, user_id=x_user_id, auth_token=auth_token)
     if not record:
         raise HTTPException(status_code=404, detail="Resume review record not found.")
     return record
+
+@app.delete("/history/{review_id}")
+def delete_resume_history_detail(
+    review_id: str,
+    x_user_id: Optional[str] = Header(None),
+    authorization: Optional[str] = Header(None)
+):
+    """Deletes a specific resume review from Supabase."""
+    auth_token = authorization.replace("Bearer ", "") if authorization else None
+    success = delete_review_by_id(review_id, user_id=x_user_id, auth_token=auth_token)
+    if not success:
+        raise HTTPException(status_code=400, detail="Failed to delete resume review record or unauthorized.")
+    return {"status": "deleted", "id": review_id}
 
 if __name__ == "__main__":
     import os
