@@ -18,6 +18,7 @@ import AIOrbBackground from './components/AIOrbBackground';
 import InteractiveHeroScanner from './components/InteractiveHeroScanner';
 import RealTimeResumeUpdater from './components/RealTimeResumeUpdater';
 import HistoryDrawer from './components/HistoryDrawer';
+import ErrorBoundary from './components/ErrorBoundary';
 import { analyzeResume } from './services/api';
 
 import {
@@ -29,7 +30,9 @@ import {
   ArrowRight,
   RefreshCw,
   FileCheck2,
-  CheckCircle2
+  CheckCircle2,
+  AlertCircle,
+  X
 } from 'lucide-react';
 
 export default function App() {
@@ -53,16 +56,18 @@ export default function App() {
     setError('');
     setIsLoading(true);
     setAiState('processing');
+    setActiveTab('dashboard'); // Seamlessly transition to dashboard view
 
     try {
       const roleToSend = analysisMode === 'without_role' ? 'auto' : targetRole;
       const data = await analyzeResume(fileToUse, roleToSend);
       setResult(data);
       setAiState('completed');
-      setActiveTab('dashboard'); // Seamlessly reveal the dashboard with results!
+      setActiveTab('dashboard');
     } catch (err) {
       setError(err.message || 'Failed to analyze resume. Please try again.');
       setAiState('idle');
+      setActiveTab('dashboard');
     } finally {
       setIsLoading(false);
     }
@@ -93,14 +98,28 @@ export default function App() {
       />
 
       <main className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
-        {/* Major Feature Tab Views */}
-        {activeTab === 'hero' ? (
-          <InteractiveHeroScanner
-            onNavigateToDashboard={() => setActiveTab('dashboard')}
-            onNavigateToJobMatcher={() => setActiveTab('job-matcher')}
-            onNavigateToHowItWorks={() => setActiveTab('how-it-works')}
-          />
-        ) : activeTab === 'job-matcher' ? (
+        {/* Global Error Banner */}
+        {error && activeTab !== 'dashboard' && (
+          <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-center justify-between text-left shadow-sm animate-in fade-in duration-300">
+            <div className="flex items-center space-x-2">
+              <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+              <span>{error}</span>
+            </div>
+            <button onClick={() => setError('')} className="text-rose-600 hover:text-rose-800 cursor-pointer">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
+        <ErrorBoundary onReset={handleReset}>
+          {/* Major Feature Tab Views */}
+          {activeTab === 'hero' ? (
+            <InteractiveHeroScanner
+              onNavigateToDashboard={() => setActiveTab('dashboard')}
+              onNavigateToJobMatcher={() => setActiveTab('job-matcher')}
+              onNavigateToHowItWorks={() => setActiveTab('how-it-works')}
+            />
+          ) : activeTab === 'job-matcher' ? (
           <JobDescriptionMatcher
             selectedFile={selectedFile}
             setSelectedFile={setSelectedFile}
@@ -381,6 +400,7 @@ export default function App() {
             )}
           </div>
         )}
+        </ErrorBoundary>
       </main>
 
       {/* Footer */}

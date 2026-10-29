@@ -14,7 +14,8 @@ import {
   ChevronRight,
   BookOpen,
   Send,
-  Loader2
+  Loader2,
+  Layers
 } from 'lucide-react';
 import { rewriteBullet } from '../services/api';
 
