@@ -1,0 +1,218 @@
+[
+  {
+    "id": "fe_001",
+    "category": "INFORMATION-TECHNOLOGY",
+    "role_target": "Frontend Developer",
+    "text": "Frontend Developer with 4 years of experience building modern web applications. Proficient in React, JavaScript (ES6+), TypeScript, HTML5, CSS3, Redux Toolkit, and Tailwind CSS. Built responsive single page applications, integrated REST APIs and GraphQL endpoints, optimized Core Web Vitals, and achieved 98 lighthouse performance scores. Experienced with Git version control, Jest unit testing, and Webpack build optimizations.",
+    "skills": ["React", "JavaScript", "TypeScript", "HTML", "CSS", "Redux", "Tailwind CSS", "REST API", "GraphQL", "Git", "Testing"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "fe_002",
+    "category": "INFORMATION-TECHNOLOGY",
+    "role_target": "Frontend Developer",
+    "text": "Senior Frontend Engineer specializing in Next.js, React, TypeScript, and modern CSS architecture including Tailwind and styled-components. Spearheaded migration of legacy jQuery application to React 18 with server components, reducing bundle size by 42%. Collaborated with UI/UX designers using Figma, implemented accessible WCAG compliant design systems, and wrote end-to-end tests with Cypress and Jest.",
+    "skills": ["Next.js", "React", "TypeScript", "Tailwind CSS", "CSS", "JavaScript", "Figma", "UI/UX", "Testing", "Git"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "fe_003",
+    "category": "INFORMATION-TECHNOLOGY",
+    "role_target": "Frontend Developer",
+    "text": "Web Developer with strong skills in HTML, CSS, JavaScript, Vue.js, Vuex, and responsive web design. Developed customer-facing eCommerce dashboards, integrated Stripe payment APIs, and ensured cross-browser compatibility across Chrome, Safari, and Firefox. Proficient in Git, NPM, Vite, and mobile-first responsive layouts.",
+    "skills": ["HTML", "CSS", "JavaScript", "Vue.js", "Git", "REST API"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "fe_004",
+    "category": "INFORMATION-TECHNOLOGY",
+    "role_target": "Frontend Developer",
+    "text": "Junior Frontend Developer passionate about interactive user interfaces. Skilled in JavaScript, React, HTML5, CSS3, Bootstrap, and Tailwind CSS. Built multiple full-stack projects using React and Firebase, integrated third-party REST APIs, and managed codebase using Git and GitHub.",
+    "skills": ["JavaScript", "React", "HTML", "CSS", "Tailwind CSS", "REST API", "Git"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "be_001",
+    "category": "ENGINEERING",
+    "role_target": "Backend Developer",
+    "text": "Backend Engineer with 5 years experience designing scalable distributed systems in Python, FastAPI, and Django. Architected high-throughput microservices handling 10,000 requests per second. Proficient in PostgreSQL, Redis caching, SQLAlchemy ORM, database indexing, and query optimization. Automated deployments using Docker and GitHub Actions CI/CD pipelines.",
+    "skills": ["Python", "FastAPI", "Django", "SQL", "PostgreSQL", "Redis", "Microservices", "Docker", "CI/CD", "Git", "REST API"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "be_002",
+    "category": "ENGINEERING",
+    "role_target": "Backend Developer",
+    "text": "Senior Node.js Backend Developer with expertise in Express, TypeScript, MongoDB, and Redis. Engineered event-driven microservices using RabbitMQ and Apache Kafka. Designed RESTful and gRPC APIs, implemented JWT and OAuth2 authentication, and maintained 99.95% system uptime on AWS ECS and RDS.",
+    "skills": ["Node.js", "Express", "TypeScript", "MongoDB", "Redis", "REST API", "Microservices", "AWS", "Git"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "be_003",
+    "category": "ENGINEERING",
+    "role_target": "Backend Developer",
+    "text": "Python Software Engineer experienced in web server development with Flask, FastAPI, and PostgreSQL. Created background worker tasks using Celery and Redis. Implemented data migration scripts, relational database schema modeling, and comprehensive unit tests using Pytest.",
+    "skills": ["Python", "FastAPI", "Flask", "SQL", "PostgreSQL", "Redis", "REST API", "Git", "Testing"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "be_004",
+    "category": "ENGINEERING",
+    "role_target": "Backend Developer",
+    "text": "Backend Developer specializing in Go and Python REST APIs. Built real-time analytics streaming pipelines, configured database connection pooling, and optimized slow SQL queries by 60%. Hands-on experience with Linux administration, Docker containers, and Git version control.",
+    "skills": ["Python", "SQL", "REST API", "Docker", "Linux", "Git"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "fs_001",
+    "category": "INFORMATION-TECHNOLOGY",
+    "role_target": "Full Stack Developer",
+    "text": "Full Stack Developer proficient in the MERN stack (MongoDB, Express, React, Node.js) and TypeScript. Delivered full lifecycle web applications from concept to production on AWS. Built responsive interfaces with Tailwind CSS and secure backend REST APIs with JWT authentication. Managed CI/CD pipelines and automated Docker container deployments.",
+    "skills": ["React", "Node.js", "Express", "MongoDB", "JavaScript", "TypeScript", "Tailwind CSS", "REST API", "Docker", "AWS", "Git"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "fs_002",
+    "category": "INFORMATION-TECHNOLOGY",
+    "role_target": "Full Stack Developer",
+    "text": "Senior Full Stack Engineer with 6 years building web platforms using Python FastAPI, React, Next.js, and PostgreSQL. Designed normalized database schemas, implemented GraphQL APIs, and optimized client bundle sizes. Experienced with Redis caching, Docker, Kubernetes, and agile sprint planning in Jira.",
+    "skills": ["Python", "FastAPI", "React", "Next.js", "SQL", "PostgreSQL", "Redis", "Docker", "Kubernetes", "GraphQL", "Agile", "Jira", "Git"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "fs_003",
+    "category": "INFORMATION-TECHNOLOGY",
+    "role_target": "Full Stack Developer",
+    "text": "Full Stack Software Engineer experienced in Java Spring Boot backend and Angular frontend. Created enterprise workflow tools with MySQL databases, Hibernate ORM, and RESTful web services. Maintained CI/CD pipelines in Jenkins and version controlled code in Git.",
+    "skills": ["Java", "Spring Boot", "Angular", "SQL", "MySQL", "Hibernate", "REST API", "Git", "CI/CD"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "ds_001",
+    "category": "INFORMATION-TECHNOLOGY",
+    "role_target": "Data Scientist",
+    "text": "Data Scientist with Master's degree in Statistics and 4 years of industrial experience. Expert in Python, Pandas, NumPy, Scikit-learn, and SQL. Developed predictive machine learning models including random forests, gradient boosting (XGBoost, LightGBM), and logistic regression. Formulated A/B testing methodologies and presented data storytelling insights to executive stakeholders.",
+    "skills": ["Python", "Pandas", "NumPy", "Scikit-learn", "Machine Learning", "Statistics", "SQL", "Data Analysis"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "ds_002",
+    "category": "INFORMATION-TECHNOLOGY",
+    "role_target": "Data Scientist",
+    "text": "Senior Data Scientist specializing in natural language processing and customer analytics. Extracted insights from 5M+ user interactions using Python, Scikit-learn, NLTK, and SQL. Built churn prediction model resulting in $250k retained annual recurring revenue. Created automated executive KPI reporting dashboards using Tableau and Matplotlib.",
+    "skills": ["Python", "Pandas", "Scikit-learn", "Machine Learning", "SQL", "Statistics", "Data Analysis", "Matplotlib"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "ds_003",
+    "category": "INFORMATION-TECHNOLOGY",
+    "role_target": "Data Scientist",
+    "text": "Applied Data Scientist with strong background in quantitative analysis and experimental design. Proficient in Python, R, SQL, Pandas, NumPy, and Scikit-learn. Conducted exploratory data analysis on multi-terabyte datasets, engineered features, and built automated data validation pipelines.",
+    "skills": ["Python", "SQL", "Pandas", "NumPy", "Scikit-learn", "Machine Learning", "Data Analysis", "Statistics"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "ml_001",
+    "category": "ENGINEERING",
+    "role_target": "ML Engineer",
+    "text": "Machine Learning Engineer experienced in productionizing deep learning models using PyTorch, TensorFlow, and Hugging Face Transformers. Designed distributed model training pipelines on GPU clusters, optimized inference latency using TensorRT and ONNX runtime, and deployed REST inference microservices with FastAPI and Docker. Familiar with MLflow model registry and Kubeflow.",
+    "skills": ["Python", "PyTorch", "TensorFlow", "Scikit-learn", "Machine Learning", "Deep Learning", "FastAPI", "Docker", "MLOps", "Git"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "ml_002",
+    "category": "ENGINEERING",
+    "role_target": "ML Engineer",
+    "text": "Senior ML Systems Engineer focused on computer vision and LLM applications. Fine-tuned vision transformers and open-source LLMs using PyTorch, PEFT/LoRA, and DeepSpeed. Scaled model serving infrastructure on AWS SageMaker and Kubernetes, achieving sub-40ms response times for 1M daily requests.",
+    "skills": ["Python", "PyTorch", "Deep Learning", "Machine Learning", "AWS", "Kubernetes", "Docker", "Git"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "ml_003",
+    "category": "ENGINEERING",
+    "role_target": "ML Engineer",
+    "text": "Machine Learning Engineer with strong foundations in data structures, algorithms, and applied mathematics. Implemented recommender systems using Scikit-learn, PyTorch, and Apache Spark. Built continuous retraining pipelines with Airflow, monitored data drift, and maintained versioned feature stores.",
+    "skills": ["Python", "Machine Learning", "PyTorch", "Scikit-learn", "Spark", "NumPy", "Pandas", "Git"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "de_001",
+    "category": "ENGINEERING",
+    "role_target": "Data Engineer",
+    "text": "Data Engineer with 5 years building resilient data pipelines and lakehouses. Expert in Apache Spark (PySpark), Apache Airflow, SQL, Python, and Snowflake. Ingested 500GB daily streaming and batch data from Kafka into Amazon S3 and delta lake. Designed star-schema data models and implemented automated data quality checks with Great Expectations.",
+    "skills": ["Python", "SQL", "Spark", "Hadoop", "Cloud", "Pandas", "Git"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "de_002",
+    "category": "ENGINEERING",
+    "role_target": "Data Engineer",
+    "text": "Senior Data Platform Engineer proficient in SQL, Python, dbt, BigQuery, and GCP. Orchestrated complex DAG workflows in Airflow, optimized distributed SQL queries reducing query costs by 35%, and managed data governance and cataloging across 80+ tables.",
+    "skills": ["Python", "SQL", "Cloud", "Data Analysis", "Git"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "devops_001",
+    "category": "ENGINEERING",
+    "role_target": "DevOps Engineer",
+    "text": "DevOps Engineer with deep expertise in AWS cloud infrastructure, Kubernetes (EKS), Docker, Terraform, and CI/CD pipelines via GitHub Actions and GitLab CI. Automated infrastructure provisioning with Infrastructure as Code (IaC), deployed Helm charts, and configured Prometheus and Grafana observability stack with 99.99% reliability.",
+    "skills": ["Docker", "Kubernetes", "AWS", "CI/CD", "Linux", "Git", "Python", "Cloud"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "devops_002",
+    "category": "ENGINEERING",
+    "role_target": "DevOps Engineer",
+    "text": "Site Reliability Engineer (SRE) specializing in cloud security, zero-downtime blue-green deployments, and Linux systems administration. Proficient in Bash scripting, Python automation, Terraform, Ansible, and Docker containerization. Reduced Mean Time to Recovery (MTTR) by 40% through automated alerting.",
+    "skills": ["Linux", "Docker", "Kubernetes", "AWS", "Python", "CI/CD", "Git", "Cybersecurity"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "java_001",
+    "category": "ENGINEERING",
+    "role_target": "Java Developer",
+    "text": "Senior Java Developer with 7 years of enterprise software engineering experience. Proficient in Java 17, Spring Boot, Spring Security, Hibernate ORM, and PostgreSQL. Architected microservices communicating over Kafka and REST APIs. Wrote comprehensive JUnit 5 and Mockito integration tests, deployed on Kubernetes.",
+    "skills": ["Java", "Spring", "Spring Boot", "Hibernate", "JDBC", "SQL", "REST API", "Microservices", "Git", "Testing"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "java_002",
+    "category": "ENGINEERING",
+    "role_target": "Java Developer",
+    "text": "Java Backend Engineer building secure banking applications with Spring Boot, Spring Cloud, Oracle DB, SQL, and JDBC. Developed high-concurrency payment processing modules with distributed transaction management and automated Jenkins CI/CD pipelines.",
+    "skills": ["Java", "Spring Boot", "Spring", "SQL", "JDBC", "Hibernate", "Git", "CI/CD"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "design_001",
+    "category": "DESIGNER",
+    "role_target": "UI/UX Designer",
+    "text": "Lead UI/UX Designer with 6 years creating user-centered web and mobile experiences. Expert in Figma, wireframing, interactive prototyping, user research, and usability testing. Designed comprehensive multi-brand design systems, conducted card sorting and user interviews, and collaborated closely with frontend developers.",
+    "skills": ["Figma", "UI/UX", "Prototyping", "HTML", "CSS"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "pm_001",
+    "category": "BUSINESS-DEVELOPMENT",
+    "role_target": "Product Manager",
+    "text": "Technical Product Manager with track record of taking SaaS products from discovery to launch. Proficient in Agile Scrum methodologies, user story creation, backlog grooming in Jira, product roadmapping, and data-driven prioritization. Partnered with engineering, sales, and design to increase quarterly active users by 35%.",
+    "skills": ["Product Management", "Agile", "Scrum", "Jira", "Data Analysis"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "mobile_001",
+    "category": "ENGINEERING",
+    "role_target": "Android Developer",
+    "text": "Android Developer with 4 years building native mobile applications in Kotlin and Java. Deep experience with Jetpack Compose, Coroutines, MVVM architecture, Retrofit REST client, and Room database. Published 3 consumer apps to Google Play Store with 4.7+ star ratings.",
+    "skills": ["Kotlin", "Java", "Android", "REST API", "Git"],
+    "source": "curated_benchmark"
+  },
+  {
+    "id": "sec_001",
+    "category": "ENGINEERING",
+    "role_target": "Cybersecurity Analyst",
+    "text": "Information Security Analyst proficient in vulnerability scanning, penetration testing, network security monitoring (Wireshark, SIEM), and incident response. Handled SOC tier 2 operations, implemented OWASP Top 10 security controls, and ensured compliance with ISO 27001 standards.",
+    "skills": ["Cybersecurity", "Networking", "Linux", "Python"],
+    "source": "curated_benchmark"
+  }
+]
