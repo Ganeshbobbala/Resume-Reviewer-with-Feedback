@@ -1,0 +1,44 @@
+[
+  {
+    "source_id": "harvard_ocs_guide",
+    "title": "Harvard OCS Resume & Cover Letter Principles",
+    "section": "Bullet Point Construction & Action Verbs",
+    "tags": ["formatting", "bullet_points", "action_verbs", "impact"],
+    "content": "Begin each resume bullet point with a strong, active verb in the past tense (e.g., 'Engineered', 'Optimized', 'Spearheaded', 'Refactored'). Avoid weak introductory phrases such as 'Responsible for', 'Assisted in', or 'Helped with'. Structure each bullet following the Action-Context-Result (ACR) or STAR formula: describe what action you took, the specific tools and methods used, and the measurable outcome achieved."
+  },
+  {
+    "source_id": "harvard_ocs_guide",
+    "title": "Harvard OCS Resume & Cover Letter Principles",
+    "section": "Quantification & Measurable Impact",
+    "tags": ["quantification", "metrics", "results"],
+    "content": "Quantify outcomes wherever possible with concrete numerical achievements. Examples include percentage reductions in latency (e.g., 'reduced API response times by 35%'), user scale (e.g., 'serving 150,000+ monthly active users'), throughput increases (e.g., 'scaled system to process 5,000 requests/sec'), or time saved (e.g., 'cut deployment cycles from 4 hours to 15 minutes'). If exact metrics are confidential, use relative ranges or proportions."
+  },
+  {
+    "source_id": "tech_hiring_rubrics",
+    "title": "Engineering Competency & Seniority Rubric",
+    "section": "Frontend Engineering Best Practices",
+    "tags": ["frontend", "react", "performance", "web_vitals"],
+    "content": "For Frontend Developer resumes, prioritize evidence of Component Architecture, State Management, and Web Performance. Standout candidates showcase Core Web Vitals optimization (LCP, FID, CLS), modern build tools (Vite, Webpack), accessible UI components (WCAG standards), type safety with TypeScript, and automated testing (Jest, Cypress). Avoid simply listing HTML/CSS without contextual projects."
+  },
+  {
+    "source_id": "tech_hiring_rubrics",
+    "title": "Engineering Competency & Seniority Rubric",
+    "section": "Backend & Distributed Systems Best Practices",
+    "tags": ["backend", "fastapi", "python", "database", "apis"],
+    "content": "For Backend Developer resumes, recruiters seek clear evidence of high-concurrency architecture, database query tuning, and API design. Highlight experience with relational databases (PostgreSQL, indexing, normalization), in-memory caching (Redis), distributed messaging (Kafka, RabbitMQ), containerization (Docker), and automated CI/CD deployment pipelines."
+  },
+  {
+    "source_id": "tech_hiring_rubrics",
+    "title": "Engineering Competency & Seniority Rubric",
+    "section": "Data Science & Machine Learning Guidelines",
+    "tags": ["data_science", "machine_learning", "evaluation", "mlops"],
+    "content": "For Data Science and ML Engineer candidates, resumes should explicitly detail dataset dimensions, model validation metrics (AUC-ROC, F1-score, RMSE), and business impact. Differentiate between exploratory notebook prototyping and production deployment (FastAPI serving, Docker, MLflow, latency optimization, drift monitoring)."
+  },
+  {
+    "source_id": "screening_standards",
+    "title": "Technical Resume Screening & Formatting Standards",
+    "section": "Document Structure & Parseability",
+    "tags": ["structure", "sections", "formatting", "ats"],
+    "content": "Maintain clear, standard section headings: Contact Information, Technical Skills, Professional Experience, Projects, and Education. Use clean, single-column or easily linearizable layouts. Avoid complex multi-layered floating text boxes, graphics-embedded text, or uncommon section headers like 'My Journey' which impede automated parsing."
+  }
+]

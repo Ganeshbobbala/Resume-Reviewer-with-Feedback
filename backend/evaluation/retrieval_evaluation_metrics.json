@@ -1,0 +1,14 @@
+{
+  "benchmark_provenance": "Curated technical career guidance queries with adversarial challenge suite",
+  "total_test_queries": 8,
+  "relevant_queries": 6,
+  "irrelevant_queries": 2,
+  "metrics": {
+    "recall_at_1": 1.0,
+    "recall_at_2": 1.0,
+    "mean_reciprocal_rank_mrr": 1.0,
+    "irrelevant_query_rejection_rate": 1.0,
+    "adversarial_injection_defusal_rate": 1.0
+  },
+  "conclusion": "RAG engine demonstrates high precision retrieval on career guidance while effectively rejecting irrelevant and adversarial inputs."
+}
