@@ -40,7 +40,7 @@ export default function InteractiveHeroScanner({
       </p>
 
       {/* 4. Sleek Hero Action Buttons */}
-      <div className="flex flex-wrap items-center justify-center gap-3.5 mb-8">
+      <div className="flex flex-wrap items-center justify-center gap-3.5 mb-16">
         <button
           onClick={onNavigateToDashboard}
           className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md shadow-indigo-600/25 transition-all cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
@@ -59,30 +59,7 @@ export default function InteractiveHeroScanner({
         </button>
       </div>
 
-      {/* 5. Minimal Feature Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-2.5 mb-14">
-        <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 border border-slate-200/80 shadow-xs text-xs font-semibold text-slate-700">
-          <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-          <span>LinearSVC ML Model</span>
-        </span>
-
-        <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 border border-slate-200/80 shadow-xs text-xs font-semibold text-slate-700">
-          <span className="w-1.5 h-1.5 rounded-full bg-cyan-500" />
-          <span>Explainable 0–100 Scoring</span>
-        </span>
-
-        <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 border border-slate-200/80 shadow-xs text-xs font-semibold text-slate-700">
-          <span className="w-1.5 h-1.5 rounded-full bg-violet-500" />
-          <span>15 Tech Roles Supported</span>
-        </span>
-
-        <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 border border-slate-200/80 shadow-xs text-xs font-semibold text-slate-700">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-          <span>Job Gap Analysis</span>
-        </span>
-      </div>
-
-      {/* 6. Three Clean Designer Feature Cards */}
+      {/* 5. Three Clean Designer Feature Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 text-left pt-2">
         
         {/* Card 1: Transparent Scoring */}

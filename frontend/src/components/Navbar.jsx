@@ -6,8 +6,7 @@ import {
   LayoutDashboard,
   Target,
   Loader2,
-  CheckCircle2,
-  Database
+  CheckCircle2
 } from 'lucide-react';
 
 export default function Navbar({
@@ -15,8 +14,7 @@ export default function Navbar({
   setActiveTab,
   onReset,
   hasResult,
-  aiState = 'idle',
-  onOpenHistory
+  aiState = 'idle'
 }) {
   return (
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm transition-all duration-200">
@@ -103,15 +101,6 @@ export default function Navbar({
               className="hidden md:inline-block text-slate-600 hover:text-slate-900 px-2 py-1 transition-colors cursor-pointer"
             >
               About
-            </button>
-
-            <button
-              onClick={onOpenHistory}
-              className="inline-flex items-center px-2.5 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-xl transition-all border border-emerald-200 cursor-pointer shadow-xs"
-              title="View past reviews stored in Supabase"
-            >
-              <Database className="w-3.5 h-3.5 mr-1 text-emerald-600" />
-              <span className="hidden sm:inline">Database</span> History
             </button>
 
             {hasResult && activeTab === 'dashboard' && (
