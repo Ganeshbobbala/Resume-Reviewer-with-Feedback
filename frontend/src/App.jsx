@@ -83,9 +83,11 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 relative flex flex-col font-sans selection:bg-indigo-600 selection:text-white">
-      {/* Background AI Light Animation (Volumetric Light & Floating Crystal Particles) */}
-      <AIOrbBackground state={aiState} />
+    <div className={`min-h-screen relative flex flex-col font-sans selection:bg-indigo-600 selection:text-white transition-colors duration-500 ${
+      activeTab === 'hero' ? 'bg-[#060713] text-slate-100' : 'bg-slate-50 text-slate-900'
+    }`}>
+      {/* Background AI Light Animation (Supports Daylight Productivity & Scrolltide Cosmos Dusk) */}
+      <AIOrbBackground state={aiState} isDusk={activeTab === 'hero'} />
 
       {/* Header Navigation with 3 Major Analysis Tabs */}
       <Navbar
@@ -388,7 +390,11 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 bg-white/90 backdrop-blur-md border-t border-slate-200 py-6 text-center text-xs text-slate-500">
+      <footer className={`relative z-10 py-6 text-center text-xs transition-colors duration-300 ${
+        activeTab === 'hero'
+          ? 'bg-[#060713]/90 border-t border-indigo-950/70 text-slate-500'
+          : 'bg-white/90 backdrop-blur-md border-t border-slate-200 text-slate-500'
+      }`}>
         <div className="max-w-7xl mx-auto px-4">
           <p>© {new Date().getFullYear()} Resume Reviewer. AI-Powered Resume Analysis & Job Matcher.</p>
         </div>
