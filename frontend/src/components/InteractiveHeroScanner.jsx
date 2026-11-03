@@ -3,8 +3,6 @@ import {
   Sparkles,
   ArrowRight,
   Target,
-  Award,
-  Bot,
   Quote
 } from 'lucide-react';
 
@@ -40,7 +38,7 @@ export default function InteractiveHeroScanner({
       </p>
 
       {/* 4. Sleek Hero Action Buttons */}
-      <div className="flex flex-wrap items-center justify-center gap-3.5 mb-16">
+      <div className="flex flex-wrap items-center justify-center gap-3.5 mb-12 sm:mb-16">
         <button
           onClick={onNavigateToDashboard}
           className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md shadow-indigo-600/25 transition-all cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
@@ -59,51 +57,8 @@ export default function InteractiveHeroScanner({
         </button>
       </div>
 
-      {/* 5. Three Clean Designer Feature Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 text-left pt-2">
-        
-        {/* Card 1: Transparent Scoring */}
-        <div className="p-6 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-sm hover:shadow-md transition-all space-y-3">
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100">
-            <Award className="w-5 h-5" />
-          </div>
-          <h3 className="text-base font-bold text-slate-900">
-            Explainable Scoring
-          </h3>
-          <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-            Multi-factor 0–100 evaluation weighted across skill relevance (40%), structural integrity (30%), role fit (20%), and ATS keyword density (10%).
-          </p>
-        </div>
-
-        {/* Card 2: ML Role Classifier */}
-        <div className="p-6 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-sm hover:shadow-md transition-all space-y-3">
-          <div className="w-10 h-10 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center border border-violet-100">
-            <Bot className="w-5 h-5" />
-          </div>
-          <h3 className="text-base font-bold text-slate-900">
-            ML Role Prediction
-          </h3>
-          <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-            Pre-trained LinearSVC model trained on thousands of resumes instantly categorizes your profile across 15 specialized engineering tracks.
-          </p>
-        </div>
-
-        {/* Card 3: Job Description Matcher */}
-        <div className="p-6 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-sm hover:shadow-md transition-all space-y-3">
-          <div className="w-10 h-10 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center border border-cyan-100">
-            <Target className="w-5 h-5" />
-          </div>
-          <h3 className="text-base font-bold text-slate-900">
-            Target Job Matcher
-          </h3>
-          <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-            Compare your resume directly with any specific job posting from LinkedIn or Indeed to pinpoint exact skill gaps and ATS compatibility.
-          </p>
-        </div>
-      </div>
-
-      {/* 7. Inspirational Philosophy & Mission Quote */}
-      <div className="relative mt-12 p-8 sm:p-10 rounded-3xl bg-white/90 backdrop-blur-md border border-slate-200/90 shadow-sm max-w-3xl mx-auto overflow-hidden text-center group hover:shadow-md transition-all">
+      {/* 5. Inspirational Philosophy & Mission Quote */}
+      <div className="relative p-8 sm:p-10 rounded-3xl bg-white/90 backdrop-blur-md border border-slate-200/90 shadow-sm max-w-3xl mx-auto overflow-hidden text-center group hover:shadow-md transition-all">
         {/* Radiant Ambient Glow & Top Accent Line */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
         <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-56 h-20 bg-indigo-100/40 rounded-full blur-2xl pointer-events-none" />
