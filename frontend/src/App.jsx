@@ -168,14 +168,6 @@ export default function App() {
 
               <div className="flex items-center space-x-3">
                 <button
-                  onClick={() => setActiveTab('hero')}
-                  className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold text-xs border border-indigo-200 shadow-sm transition-all cursor-pointer"
-                >
-                  <Sparkles className="w-4 h-4 mr-1.5 text-amber-500" />
-                  Hero Animation
-                </button>
-
-                <button
                   onClick={() => setActiveTab('job-matcher')}
                   className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-cyan-50 hover:bg-cyan-100 text-cyan-700 font-semibold text-xs border border-cyan-200 shadow-sm transition-all cursor-pointer"
                 >
@@ -313,14 +305,6 @@ export default function App() {
 
             {/* Bottom Navigation Buttons */}
             <div className="pt-6 flex flex-wrap items-center justify-center gap-4">
-              <button
-                onClick={() => setActiveTab('hero')}
-                className="inline-flex items-center px-6 py-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold text-sm shadow-sm border border-indigo-200 transition-all cursor-pointer"
-              >
-                <Sparkles className="w-4 h-4 mr-2 text-amber-500" />
-                Hero Animation Screen
-              </button>
-
               <button
                 onClick={() => setActiveTab('job-matcher')}
                 className="inline-flex items-center px-6 py-3 rounded-xl bg-cyan-50 hover:bg-cyan-100 text-cyan-700 font-semibold text-sm shadow-sm border border-cyan-200 transition-all cursor-pointer"

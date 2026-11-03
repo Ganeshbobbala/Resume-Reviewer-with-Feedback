@@ -17,14 +17,7 @@ export default function InteractiveHeroScanner({
 }) {
   return (
     <div className="relative w-full max-w-5xl mx-auto py-8 sm:py-16 px-4 select-none animate-in fade-in duration-500 text-center">
-      
-      {/* 1. Category Pill */}
-      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-indigo-50/90 text-indigo-700 border border-indigo-200/80 shadow-xs mb-6 backdrop-blur-md">
-        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-        <span>Next-Generation Resume Reviewer</span>
-      </div>
-
-      {/* 2. Bold Designer Headline */}
+      {/* 1. Bold Designer Headline */}
       <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-slate-900 tracking-tight leading-[1.1] max-w-4xl mx-auto mb-6">
         Transform Your Resume with{' '}
         <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-indigo-700 to-cyan-600">

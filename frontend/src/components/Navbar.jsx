@@ -4,9 +4,7 @@ import {
   Sparkles,
   RefreshCw,
   LayoutDashboard,
-  Target,
-  Loader2,
-  CheckCircle2
+  Target
 } from 'lucide-react';
 
 export default function Navbar({
@@ -29,22 +27,8 @@ export default function Navbar({
               <FileText className="w-5 h-5" />
             </div>
             <div>
-              <span className="font-bold text-lg text-slate-900 tracking-tight flex items-center gap-2">
+              <span className="font-bold text-lg text-slate-900 tracking-tight">
                 Resume Reviewer
-                {/* AI State Badge */}
-                {aiState === 'processing' ? (
-                  <span className="hidden lg:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-50 text-cyan-700 border border-cyan-200 animate-pulse">
-                    <Loader2 className="w-3 h-3 mr-1.5 animate-spin text-cyan-600" /> Analyzing...
-                  </span>
-                ) : aiState === 'completed' ? (
-                  <span className="hidden lg:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <CheckCircle2 className="w-3 h-3 mr-1 text-emerald-600" /> Complete
-                  </span>
-                ) : (
-                  <span className="hidden lg:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse" /> AI Ready
-                  </span>
-                )}
               </span>
             </div>
           </div>
