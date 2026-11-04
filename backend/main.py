@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 import uvicorn
 import logging
 
-from services.resume_parser import extract_text_from_pdf
+from services.resume_parser import extract_text_from_pdf, extract_text_from_document, extract_contact_info
 from services.predictor import predictor_service
 from services.skill_extractor import extract_skills
 from services.scorer import calculate_scores, ROLE_SKILLS
@@ -14,6 +14,7 @@ from services.feedback import generate_feedback, generate_bullet_rewrites
 from services.llm_feedback import generate_enhanced_llm_feedback
 from services.job_matcher import analyze_job_match
 from services.format_analyzer import analyze_resume_format
+from services.cover_letter_service import generate_tailored_cover_letter
 from services.supabase_service import (
     save_resume_review,
     get_recent_reviews,
@@ -37,13 +38,13 @@ app = FastAPI(
     version="1.2.0"
 )
 
-# Secure configurable CORS
-allowed_origins = get_allowed_origins()
+# Universal resilient CORS (allows all localhost, 127.0.0.1, and local dev ports)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins if allowed_origins != ["*"] else ["*"],
-    allow_credentials=True if allowed_origins != ["*"] else False,
-    allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
+    allow_origins=["*"],
+    allow_origin_regex=r"^https?://.*$",
+    allow_credentials=True,
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
@@ -97,7 +98,9 @@ async def analyze_resume(
     file: UploadFile = File(...),
     target_role: Optional[str] = Form(None),
     x_user_id: Optional[str] = Header(None),
-    authorization: Optional[str] = Header(None)
+    authorization: Optional[str] = Header(None),
+    x_llm_provider: Optional[str] = Header(None),
+    x_llm_api_key: Optional[str] = Header(None)
 ):
     client_ip = request.client.host if request.client else "127.0.0.1"
     if not check_rate_limit(client_ip):
@@ -107,7 +110,7 @@ async def analyze_resume(
         )
 
     contents = await file.read()
-    is_valid, err_msg = validate_uploaded_file(file.filename, contents, allowed_extensions=(".pdf",))
+    is_valid, err_msg = validate_uploaded_file(file.filename, contents, allowed_extensions=(".pdf", ".docx"))
     if not is_valid:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -123,13 +126,14 @@ async def analyze_resume(
     elif target_role not in valid_roles:
         target_role = valid_roles[0]
 
-    extracted_text, parse_error = extract_text_from_pdf(contents)
+    extracted_text, parse_error = extract_text_from_document(contents, clean_filename)
     if parse_error:
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             content={"error": parse_error}
         )
 
+    contact_info = extract_contact_info(extracted_text)
     predicted_category = predictor_service.predict(extracted_text)
     detected_skills = extract_skills(extracted_text)
     
@@ -158,7 +162,9 @@ async def analyze_resume(
         demonstrated_skills=scores.get("demonstrated_skills", []),
         insufficiently_demonstrated=scores.get("insufficiently_demonstrated_skills", []),
         sections=scores["sections"],
-        scores=scores
+        scores=scores,
+        provider_type=x_llm_provider,
+        api_key=x_llm_api_key
     )
 
     result = {
@@ -187,7 +193,8 @@ async def analyze_resume(
         "insufficiently_demonstrated_skills": scores.get("insufficiently_demonstrated_skills", []),
         "llm_feedback": llm_feedback,
         "bullet_rewrites": llm_feedback.get("bullet_rewrites", []),
-        "rag_citations": llm_feedback.get("rag_citations", [])
+        "rag_citations": llm_feedback.get("rag_citations", []),
+        "contact_info": contact_info
     }
 
     # Automatically persist feedback and resume details to Supabase database
@@ -228,7 +235,9 @@ async def analyze_resume_text(
     payload: ResumeTextPayload,
     request: Request,
     x_user_id: Optional[str] = Header(None),
-    authorization: Optional[str] = Header(None)
+    authorization: Optional[str] = Header(None),
+    x_llm_provider: Optional[str] = Header(None),
+    x_llm_api_key: Optional[str] = Header(None)
 ):
     client_ip = request.client.host if request.client else "127.0.0.1"
     if not check_rate_limit(client_ip):
@@ -254,6 +263,7 @@ async def analyze_resume_text(
     elif target_role not in valid_roles:
         target_role = valid_roles[0]
 
+    contact_info = extract_contact_info(extracted_text)
     predicted_category = predictor_service.predict(extracted_text)
     detected_skills = extract_skills(extracted_text)
     
@@ -282,7 +292,9 @@ async def analyze_resume_text(
         demonstrated_skills=scores.get("demonstrated_skills", []),
         insufficiently_demonstrated=scores.get("insufficiently_demonstrated_skills", []),
         sections=scores["sections"],
-        scores=scores
+        scores=scores,
+        provider_type=x_llm_provider,
+        api_key=x_llm_api_key
     )
 
     result = {
@@ -310,7 +322,8 @@ async def analyze_resume_text(
         "insufficiently_demonstrated_skills": scores.get("insufficiently_demonstrated_skills", []),
         "llm_feedback": llm_feedback,
         "bullet_rewrites": llm_feedback.get("bullet_rewrites", []),
-        "rag_citations": llm_feedback.get("rag_citations", [])
+        "rag_citations": llm_feedback.get("rag_citations", []),
+        "contact_info": contact_info
     }
 
     try:
@@ -378,14 +391,15 @@ async def match_job_description(
         )
 
     contents = await file.read()
-    is_valid, err_msg = validate_uploaded_file(file.filename, contents, allowed_extensions=(".pdf",))
+    is_valid, err_msg = validate_uploaded_file(file.filename, contents, allowed_extensions=(".pdf", ".docx"))
     if not is_valid:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=err_msg
         )
 
-    extracted_text, parse_error = extract_text_from_pdf(contents)
+    clean_filename = sanitize_filename(file.filename)
+    extracted_text, parse_error = extract_text_from_document(contents, clean_filename)
     if parse_error:
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -400,6 +414,36 @@ async def match_job_description(
     except Exception as e:
         logger.error(f"Job matching error: {e}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Job matching failed: {sanitize_error_message(e)}")
+
+# =========================================================================
+# ENDPOINT: /generate-cover-letter (AI-Powered Tailored Cover Letter)
+# =========================================================================
+class CoverLetterPayload(BaseModel):
+    resume_text: str
+    job_description: str
+    candidate_name: Optional[str] = "Applicant"
+    company_name: Optional[str] = None
+
+@app.post("/generate-cover-letter")
+def create_cover_letter(payload: CoverLetterPayload, request: Request):
+    client_ip = request.client.host if request.client else "127.0.0.1"
+    if not check_rate_limit(client_ip):
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Rate limit exceeded. Please wait a moment."
+        )
+
+    if not payload.resume_text or len(payload.resume_text.strip()) < 15:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Resume text is required.")
+    if not payload.job_description or len(payload.job_description.strip()) < 15:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Job description is required.")
+
+    return generate_tailored_cover_letter(
+        resume_text=payload.resume_text,
+        job_description=payload.job_description,
+        candidate_name=payload.candidate_name,
+        company_name=payload.company_name
+    )
 
 # =========================================================================
 # ENDPOINT 3: /analyze-format (Resume Format Analyzer)
@@ -417,7 +461,7 @@ async def analyze_format(
         )
 
     contents = await file.read()
-    is_valid, err_msg = validate_uploaded_file(file.filename, contents, allowed_extensions=(".pdf",))
+    is_valid, err_msg = validate_uploaded_file(file.filename, contents, allowed_extensions=(".pdf", ".docx"))
     if not is_valid:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

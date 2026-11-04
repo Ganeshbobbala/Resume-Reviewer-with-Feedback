@@ -33,7 +33,9 @@ def generate_enhanced_llm_feedback(
     demonstrated_skills: Optional[List[str]] = None,
     insufficiently_demonstrated: Optional[List[str]] = None,
     sections: Optional[Dict[str, bool]] = None,
-    scores: Optional[Dict[str, Any]] = None
+    scores: Optional[Dict[str, Any]] = None,
+    provider_type: Optional[str] = None,
+    api_key: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Coordinates LLM provider, RAG citations, and deterministic fallbacks
@@ -67,7 +69,7 @@ def generate_enhanced_llm_feedback(
     }
 
     # 5. Call LLM provider
-    provider = get_llm_provider()
+    provider = get_llm_provider(provider_type=provider_type, api_key=api_key)
     try:
         raw_result = provider.generate_feedback(prompt_data)
         validated = LLMFeedbackResponse(**raw_result)
@@ -77,3 +79,4 @@ def generate_enhanced_llm_feedback(
         from services.llm_provider import RuleBasedLLMProvider
         fallback_res = RuleBasedLLMProvider().generate_feedback(prompt_data)
         return fallback_res
+

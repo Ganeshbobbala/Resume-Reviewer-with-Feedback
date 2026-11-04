@@ -1,5 +1,6 @@
 import re
-import fitz  # PyMuPDF
+import io
+import pymupdf  # Modern PyMuPDF import
 from typing import Dict, Any, List, Tuple
 
 WEAK_PHRASES = [
@@ -21,27 +22,42 @@ STRONG_VERBS = [
 
 def analyze_resume_format(file_bytes: bytes) -> Dict[str, Any]:
     """
-    Parses PDF bytes and returns heuristic structure, bullet, contact, and readability metrics.
+    Parses PDF or DOCX bytes and returns heuristic structure, bullet, contact, and readability metrics.
     """
     if not file_bytes:
         raise ValueError("Uploaded file is empty.")
 
-    try:
-        doc = fitz.open(stream=file_bytes, filetype="pdf")
-        page_count = doc.page_count
-        
-        text_content = []
-        for page in doc:
-            t = page.get_text("text")
-            if t:
-                text_content.append(t)
-        full_text = "\n".join(text_content).strip()
-        doc.close()
-    except Exception as e:
-        raise ValueError(f"Failed to read PDF document: {str(e)}")
+    if file_bytes.startswith(b"PK\x03\x04"):
+        try:
+            import docx
+            doc = docx.Document(io.BytesIO(file_bytes))
+            paragraphs = [p.text.strip() for p in doc.paragraphs if p.text.strip()]
+            for table in doc.tables:
+                for row in table.rows:
+                    row_texts = [cell.text.strip() for cell in row.cells if cell.text.strip()]
+                    if row_texts:
+                        paragraphs.append(" | ".join(row_texts))
+            full_text = "\n".join(paragraphs).strip()
+            page_count = max(1, len(full_text) // 2500)
+        except Exception as e:
+            raise ValueError(f"Failed to read DOCX document: {str(e)}")
+    else:
+        try:
+            doc = pymupdf.open(stream=file_bytes, filetype="pdf")
+            page_count = doc.page_count
+            
+            text_content = []
+            for page in doc:
+                t = page.get_text("text")
+                if t:
+                    text_content.append(t)
+            full_text = "\n".join(text_content).strip()
+            doc.close()
+        except Exception as e:
+            raise ValueError(f"Failed to read PDF document: {str(e)}")
 
     if not full_text:
-        raise ValueError("Could not extract readable text from PDF.")
+        raise ValueError("Could not extract readable text from document.")
 
     text_lower = full_text.lower()
     lines = [line.strip() for line in full_text.split("\n") if line.strip()]

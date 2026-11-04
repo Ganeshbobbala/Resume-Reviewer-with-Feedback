@@ -197,12 +197,69 @@ class OpenAILLMProvider(BaseLLMProvider):
             logger.error(f"OpenAI API call failed ({e}). Falling back to rule-based engine.")
             return RuleBasedLLMProvider().generate_feedback(prompt_data)
 
-def get_llm_provider() -> BaseLLMProvider:
-    """Factory function selecting configured LLM provider."""
-    provider_name = os.environ.get("LLM_PROVIDER", "rule_based").lower().strip()
-    if provider_name == "openai":
-        return OpenAILLMProvider()
+class GeminiLLMProvider(BaseLLMProvider):
+    """
+    Google Gemini provider connecting to Gemini 1.5 Flash via REST API.
+    Supports user-provided or environment API keys.
+    """
+    def __init__(self, api_key: Optional[str] = None, model: str = "gemini-1.5-flash"):
+        self.api_key = api_key or os.environ.get("GEMINI_API_KEY", "")
+        self.model = model
+
+    def generate_feedback(self, prompt_data: Dict[str, Any]) -> Dict[str, Any]:
+        if not self.api_key:
+            logger.warning("GEMINI_API_KEY not configured. Falling back to rule-based engine.")
+            return RuleBasedLLMProvider().generate_feedback(prompt_data)
+
+        endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={self.api_key}"
+        system_instruction = (
+            "You are an expert senior engineering hiring manager and career coach. "
+            "Provide rigorous, honest, evidence-based feedback on technical resumes. "
+            "NEVER invent companies, degrees, dates, skills, or numerical metrics. "
+            "If a bullet rewrite requires metrics, use candidate placeholders like '[insert metric, e.g. +30%]'. "
+            "Output strictly valid JSON conforming to LLMFeedbackResponse schema."
+        )
+
+        user_content = json.dumps(prompt_data)
+        payload = {
+            "contents": [
+                {
+                    "role": "user",
+                    "parts": [{"text": f"{system_instruction}\n\nAnalyze this resume data and return ONLY raw JSON:\n{user_content}"}]
+                }
+            ],
+            "generationConfig": {
+                "temperature": 0.2,
+                "responseMimeType": "application/json"
+            }
+        }
+
+        try:
+            with httpx.Client(timeout=30.0) as client:
+                resp = client.post(endpoint, json=payload)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    content = data["candidates"][0]["content"]["parts"][0]["text"]
+                    parsed = json.loads(content)
+                    parsed["provider_used"] = f"gemini_{self.model}"
+                    validated = LLMFeedbackResponse(**parsed)
+                    return validated.model_dump()
+                else:
+                    logger.error(f"Gemini error {resp.status_code}: {resp.text}. Falling back.")
+                    return RuleBasedLLMProvider().generate_feedback(prompt_data)
+        except Exception as e:
+            logger.error(f"Gemini API call failed ({e}). Falling back.")
+            return RuleBasedLLMProvider().generate_feedback(prompt_data)
+
+def get_llm_provider(provider_type: Optional[str] = None, api_key: Optional[str] = None) -> BaseLLMProvider:
+    """Factory function selecting configured LLM provider with dynamic overrides."""
+    provider_name = (provider_type or os.environ.get("LLM_PROVIDER", "rule_based")).lower().strip()
+    if provider_name == "gemini":
+        return GeminiLLMProvider(api_key=api_key)
+    elif provider_name == "openai":
+        return OpenAILLMProvider(api_key=api_key)
     elif provider_name == "mock":
         return MockLLMProvider()
     else:
         return RuleBasedLLMProvider()
+

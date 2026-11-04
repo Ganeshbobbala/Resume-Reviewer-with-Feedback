@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import ResumeUpload from './components/ResumeUpload';
-import RoleSelector from './components/RoleSelector';
 import LoadingState from './components/LoadingState';
 import ScoreCard from './components/ScoreCard';
 import SkillsCard from './components/SkillsCard';
@@ -11,7 +10,9 @@ import StrengthsCard from './components/StrengthsCard';
 import WeaknessesCard from './components/WeaknessesCard';
 import RecommendationsCard from './components/RecommendationsCard';
 import DetailedFeedbackCard from './components/DetailedFeedbackCard';
+import AtsTextInspector from './components/AtsTextInspector';
 import JobDescriptionMatcher from './components/JobDescriptionMatcher';
+import FormatAnalyzer from './components/FormatAnalyzer';
 import HowItWorks from './components/HowItWorks';
 import About from './components/About';
 import AIOrbBackground from './components/AIOrbBackground';
@@ -20,6 +21,7 @@ import RealTimeResumeUpdater from './components/RealTimeResumeUpdater';
 import HistoryDrawer from './components/HistoryDrawer';
 import ErrorBoundary from './components/ErrorBoundary';
 import { analyzeResume } from './services/api';
+import { generatePdfReport } from './services/reportGenerator';
 
 import {
   Award,
@@ -29,17 +31,17 @@ import {
   Sparkles,
   ArrowRight,
   RefreshCw,
-  FileCheck2,
   CheckCircle2,
   AlertCircle,
-  X
+  X,
+  Download
 } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('hero'); // 'hero', 'dashboard', 'job-matcher', 'how-it-works', 'about'
   const [selectedFile, setSelectedFile] = useState(null);
-  const [targetRole, setTargetRole] = useState('Frontend Developer');
-  const [analysisMode, setAnalysisMode] = useState('with_role'); // 'with_role' | 'without_role'
+  const [targetRole, setTargetRole] = useState('auto');
+  const [analysisMode, setAnalysisMode] = useState('without_role'); // 'with_role' | 'without_role'
   const [isLoading, setIsLoading] = useState(false);
   const [aiState, setAiState] = useState('idle'); // 'idle', 'processing', 'completed'
   const [error, setError] = useState('');
@@ -83,13 +85,11 @@ export default function App() {
   };
 
   return (
-    <div className={`min-h-screen relative flex flex-col font-sans selection:bg-indigo-600 selection:text-white transition-colors duration-500 ${
-      activeTab === 'hero' ? 'bg-[#060713] text-slate-100' : 'bg-slate-50 text-slate-900'
-    }`}>
-      {/* Background AI Light Animation (Supports Daylight Productivity & Scrolltide Cosmos Dusk) */}
-      <AIOrbBackground state={aiState} isDusk={activeTab === 'hero'} />
+    <div className="min-h-screen bg-slate-50 text-slate-900 relative flex flex-col font-sans selection:bg-indigo-600 selection:text-white">
+      {/* Background AI Light Animation (Volumetric Light & Floating Crystal Particles) */}
+      <AIOrbBackground state={aiState} />
 
-      {/* Header Navigation with 3 Major Analysis Tabs */}
+      {/* Header Navigation with Analysis Feature Tabs */}
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -123,6 +123,11 @@ export default function App() {
             />
           ) : activeTab === 'job-matcher' ? (
           <JobDescriptionMatcher
+            selectedFile={selectedFile}
+            setSelectedFile={setSelectedFile}
+          />
+        ) : activeTab === 'format-analyzer' ? (
+          <FormatAnalyzer
             selectedFile={selectedFile}
             setSelectedFile={setSelectedFile}
           />
@@ -168,7 +173,16 @@ export default function App() {
                 </p>
               </div>
 
-              <div className="flex items-center space-x-3">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                <button
+                  onClick={() => generatePdfReport(result, selectedFile?.name || 'Resume')}
+                  className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-indigo-700 font-semibold text-xs border border-indigo-200 shadow-sm transition-all cursor-pointer"
+                  title="Export a printable PDF diagnostic audit report"
+                >
+                  <Download className="w-4 h-4 mr-1.5 text-indigo-600" />
+                  Export PDF Report
+                </button>
+
                 <button
                   onClick={() => setActiveTab('job-matcher')}
                   className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-cyan-50 hover:bg-cyan-100 text-cyan-700 font-semibold text-xs border border-cyan-200 shadow-sm transition-all cursor-pointer"
@@ -295,7 +309,13 @@ export default function App() {
             {/* Row 4: Recommendations Card */}
             <RecommendationsCard recommendations={result.recommendations} />
 
-            {/* Row 5: Deep Multi-Dimensional Feedback Hub */}
+            {/* Row 5: ATS Contact & Raw Text Inspector */}
+            <AtsTextInspector
+              contactInfo={result.contact_info}
+              rawText={result.extracted_text}
+            />
+
+            {/* Row 6: Deep Multi-Dimensional Feedback Hub */}
             <DetailedFeedbackCard
               detailedFeedback={result.detailed_feedback}
               targetRole={result.target_role}
@@ -335,13 +355,6 @@ export default function App() {
               onAutoAnalyze={handleAnalyze}
             />
 
-            <RoleSelector
-              targetRole={targetRole}
-              setTargetRole={setTargetRole}
-              analysisMode={analysisMode}
-              setAnalysisMode={setAnalysisMode}
-            />
-
             {/* Analyze Button */}
             <div className="text-center pt-2">
               <button
@@ -356,45 +369,13 @@ export default function App() {
                 Analyze Resume <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
               </button>
             </div>
-
-            {/* Empty State Features Section */}
-            {!selectedFile && (
-              <div className="bg-white/90 backdrop-blur-md rounded-2xl p-8 border border-slate-200 shadow-sm space-y-4 text-left mt-8">
-                <div className="flex items-center space-x-2">
-                  <FileCheck2 className="w-5 h-5 text-indigo-600" />
-                  <h3 className="text-base font-bold text-slate-900">No Resume Analyzed Yet</h3>
-                </div>
-                <p className="text-xs text-slate-500">
-                  Upload your resume PDF above to receive instant, explainable feedback tailored for your target tech role:
-                </p>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                  {[
-                    'Explainable Resume Score (0-100)',
-                    'ML Job-Role Prediction (15 Tracks)',
-                    'Comprehensive Skill Detection',
-                    'Role-Based Skill Matching',
-                    'Target Job Description Matcher'
-                  ].map((feature) => (
-                    <div key={feature} className="flex items-center space-x-2 text-xs font-medium text-slate-700 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>{feature}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         )}
         </ErrorBoundary>
       </main>
 
       {/* Footer */}
-      <footer className={`relative z-10 py-6 text-center text-xs transition-colors duration-300 ${
-        activeTab === 'hero'
-          ? 'bg-[#060713]/90 border-t border-indigo-950/70 text-slate-500'
-          : 'bg-white/90 backdrop-blur-md border-t border-slate-200 text-slate-500'
-      }`}>
+      <footer className="relative z-10 bg-white/90 backdrop-blur-md border-t border-slate-200 py-6 text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4">
           <p>© {new Date().getFullYear()} Resume Reviewer. AI-Powered Resume Analysis & Job Matcher.</p>
         </div>

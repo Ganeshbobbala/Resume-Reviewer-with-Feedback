@@ -5,7 +5,7 @@
     "schema_validity_rate": 1.0,
     "non_fabrication_compliance_rate": 1.0,
     "skill_gap_coverage_rate": 1.0,
-    "mean_latency_ms": 12.72
+    "mean_latency_ms": 15.42
   },
   "conclusion": "LLM feedback engine consistently outputs fully validated structured schemas with zero fabricated claims and strict candidate metric prompts."
 }

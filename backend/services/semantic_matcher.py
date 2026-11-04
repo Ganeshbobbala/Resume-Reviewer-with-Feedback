@@ -309,3 +309,4 @@ def compute_semantic_matching(
         "missing_requirements_count": sum(1 for r in requirement_breakdown if r["status"] == "missing"),
         "embedding_mode": "SentenceTransformer" if not embedding_service._fallback_mode else "TF-IDF Latent Semantic"
     }
+

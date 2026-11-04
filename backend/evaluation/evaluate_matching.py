@@ -145,3 +145,4 @@ if __name__ == "__main__":
     print(f"Lexical TF-IDF: nDCG@3 = {res['metrics']['lexical_tfidf_baseline']['ndcg_at_3']} | Spearman = {res['metrics']['lexical_tfidf_baseline']['spearman_correlation']}")
     print(f"Dense Semantic: nDCG@3 = {res['metrics']['dense_semantic_matching']['ndcg_at_3']} | Spearman = {res['metrics']['dense_semantic_matching']['spearman_correlation']}")
     print(f"Hybrid System:  nDCG@3 = {res['metrics']['hybrid_ranking_system']['ndcg_at_3']} | Spearman = {res['metrics']['hybrid_ranking_system']['spearman_correlation']}")
+

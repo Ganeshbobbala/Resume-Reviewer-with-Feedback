@@ -144,3 +144,4 @@ Evaluated across diverse candidate profile excerpts:
 ## 5. Conclusion
 
 This work demonstrates that production resume screening systems can achieve state-of-the-art semantic comprehension without sacrificing transparency, determinism, or data privacy. By coupling dense sentence transformers with sparse lexical verification, grounded RAG rubrics, and strict Pydantic schema validation, the platform provides candidates and recruiters with actionable, verifiable, and ethical resume evaluation.
+

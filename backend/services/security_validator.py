@@ -116,3 +116,4 @@ def sanitize_error_message(err: Exception) -> str:
     # Remove potential tokens or keys
     err_str = re.sub(r'(?:sb_|sk-|Bearer\s+)[A-Za-z0-9_\-\.]{15,}', '[REDACTED_SECRET]', err_str)
     return err_str
+

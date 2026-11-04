@@ -56,3 +56,4 @@ def test_scoring_formula_preservation():
 
 if __name__ == "__main__":
     pytest.main(["-v", __file__])
+

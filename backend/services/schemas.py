@@ -42,3 +42,4 @@ class LLMFeedbackResponse(BaseModel):
         description="Explicit disclosure of automated evaluation boundaries"
     )
     provider_used: str = Field("rule_based", description="LLM provider or rule engine that generated the feedback")
+

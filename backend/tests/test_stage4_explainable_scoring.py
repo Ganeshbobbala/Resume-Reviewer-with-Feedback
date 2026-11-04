@@ -107,3 +107,4 @@ def test_empty_resume_scoring_boundaries():
 
 if __name__ == "__main__":
     pytest.main(["-v", __file__])
+

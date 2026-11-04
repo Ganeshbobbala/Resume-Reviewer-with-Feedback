@@ -149,3 +149,4 @@ if __name__ == "__main__":
     print(f"Mean Reciprocal Rank (MRR): {res['metrics']['mean_reciprocal_rank_mrr']}")
     print(f"Irrelevant Query Rejection Rate: {res['metrics']['irrelevant_query_rejection_rate']}")
     print(f"Adversarial Injection Defusal Rate: {res['metrics']['adversarial_injection_defusal_rate']}")
+

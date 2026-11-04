@@ -14,14 +14,8 @@ export default function Navbar({
   hasResult,
   aiState = 'idle'
 }) {
-  const isDusk = activeTab === 'hero';
-
   return (
-    <header className={`sticky top-0 z-50 backdrop-blur-md transition-all duration-300 ${
-      isDusk
-        ? 'bg-[#080915]/85 border-b border-indigo-950/70 text-slate-100 shadow-md shadow-black/30'
-        : 'bg-white/90 border-b border-slate-200 text-slate-900 shadow-sm'
-    }`}>
+    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm transition-all duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo / Brand */}
@@ -29,13 +23,11 @@ export default function Navbar({
             className="flex items-center space-x-3 cursor-pointer group shrink-0"
             onClick={() => setActiveTab('hero')}
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-indigo-600 to-indigo-700 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform border border-amber-400/30">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
               <FileText className="w-5 h-5" />
             </div>
             <div>
-              <span className={`font-bold text-lg tracking-tight transition-colors ${
-                isDusk ? 'text-white' : 'text-slate-900'
-              }`}>
+              <span className="font-bold text-lg text-slate-900 tracking-tight">
                 Resume Reviewer
               </span>
             </div>
@@ -47,13 +39,11 @@ export default function Navbar({
               onClick={() => setActiveTab('hero')}
               className={`px-3 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer ${
                 activeTab === 'hero'
-                  ? 'bg-amber-950/40 text-amber-300 border border-amber-500/40 font-bold shadow-xs'
-                  : isDusk
-                  ? 'text-slate-400 hover:text-slate-200 hover:bg-indigo-950/40'
+                  ? 'bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold shadow-sm'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
-              <Sparkles className="w-4 h-4 text-amber-400" />
+              <Sparkles className="w-4 h-4 text-amber-500" />
               <span>Home</span>
             </button>
 
@@ -62,12 +52,10 @@ export default function Navbar({
               className={`px-3 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer ${
                 activeTab === 'dashboard'
                   ? 'bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold shadow-sm'
-                  : isDusk
-                  ? 'text-slate-400 hover:text-slate-200 hover:bg-indigo-950/40'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
-              <LayoutDashboard className="w-4 h-4 text-indigo-400 sm:text-indigo-600" />
+              <LayoutDashboard className="w-4 h-4 text-indigo-600" />
               <span>Resume Analysis</span>
             </button>
 
@@ -76,12 +64,10 @@ export default function Navbar({
               className={`px-3 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer ${
                 activeTab === 'job-matcher'
                   ? 'bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold shadow-sm'
-                  : isDusk
-                  ? 'text-slate-400 hover:text-slate-200 hover:bg-indigo-950/40'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
-              <Target className="w-4 h-4 text-cyan-400 sm:text-cyan-600" />
+              <Target className="w-4 h-4 text-cyan-600" />
               <span>Job Matcher</span>
             </button>
           </nav>
@@ -90,17 +76,13 @@ export default function Navbar({
           <div className="flex items-center space-x-2 sm:space-x-3 text-xs">
             <button
               onClick={() => setActiveTab('how-it-works')}
-              className={`hidden md:inline-block px-2 py-1 transition-colors cursor-pointer ${
-                isDusk ? 'text-slate-400 hover:text-slate-200' : 'text-slate-600 hover:text-slate-900'
-              }`}
+              className="hidden md:inline-block text-slate-600 hover:text-slate-900 px-2 py-1 transition-colors cursor-pointer"
             >
               How It Works
             </button>
             <button
               onClick={() => setActiveTab('about')}
-              className={`hidden md:inline-block px-2 py-1 transition-colors cursor-pointer ${
-                isDusk ? 'text-slate-400 hover:text-slate-200' : 'text-slate-600 hover:text-slate-900'
-              }`}
+              className="hidden md:inline-block text-slate-600 hover:text-slate-900 px-2 py-1 transition-colors cursor-pointer"
             >
               About
             </button>

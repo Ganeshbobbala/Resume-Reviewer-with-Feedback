@@ -294,3 +294,4 @@ def extract_canonical_skills(raw_text: str) -> List[str]:
     """
     detailed = extract_skills_detailed(raw_text)
     return [d["canonical_name"] for d in detailed]
+

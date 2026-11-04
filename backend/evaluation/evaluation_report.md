@@ -1,6 +1,6 @@
 # AI Resume Reviewer: Comprehensive Evaluation Report
 
-**Generated:** 2026-10-29T16:49:34Z  
+**Generated:** 2026-10-29T17:03:48Z  
 **System Architecture:** Hybrid Lexical + Dense Semantic Matching, Grounded RAG, and Pydantic-Validated LLM Feedback  
 
 ---
@@ -49,7 +49,7 @@
 - **Schema Validity:** `100.0%` compliant with `LLMFeedbackResponse`.
 - **Non-Fabrication Compliance:** `100.0%` — all metric rewrites provide explicit candidate placeholders (e.g. `[insert metric, e.g. +30%]`) rather than inventing unverifiable achievements.
 - **Skill-Gap Coverage:** `100.0%`.
-- **Mean Latency:** `12.72 ms`.
+- **Mean Latency:** `15.42 ms`.
 
 ---
 *Report verified and produced by the Antigravity Evaluation Engine.*

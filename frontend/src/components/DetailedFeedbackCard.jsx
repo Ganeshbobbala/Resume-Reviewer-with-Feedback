@@ -18,6 +18,7 @@ import {
   Layers
 } from 'lucide-react';
 import { rewriteBullet } from '../services/api';
+import BulletDiffViewer from './BulletDiffViewer';
 
 export default function DetailedFeedbackCard({
   detailedFeedback = {},
@@ -592,30 +593,15 @@ export default function DetailedFeedbackCard({
                 <Sparkles className="w-3.5 h-3.5 text-amber-500" /> 3 AI-Enhanced Variations:
               </h4>
 
-              <div className="space-y-2.5">
+              <div className="space-y-3">
                 {rewrittenVariations.map((v, idx) => (
-                  <div key={idx} className="p-3.5 rounded-xl bg-white border border-slate-200 hover:border-indigo-300 shadow-xs transition-all space-y-2 group">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-indigo-900">{v.style}</span>
-                        <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                          {v.tag}
-                        </span>
-                      </div>
-                      <button
-                        onClick={() => handleCopyVariation(v.text, idx)}
-                        className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 transition-colors cursor-pointer"
-                        title="Copy to clipboard"
-                      >
-                        {copiedIdx === idx ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                        <span>{copiedIdx === idx ? 'Copied' : 'Copy'}</span>
-                      </button>
-                    </div>
-
-                    <p className="text-xs text-slate-800 leading-relaxed font-medium font-sans">
-                      {v.text}
-                    </p>
-                  </div>
+                  <BulletDiffViewer
+                    key={idx}
+                    originalBullet={bulletInput}
+                    improvedBullet={v.text}
+                    styleName={v.style}
+                    tag={v.tag}
+                  />
                 ))}
               </div>
             </div>

@@ -158,3 +158,4 @@ def prepare_dataset(split_ratio: float = 0.8) -> Dict[str, str]:
 if __name__ == "__main__":
     paths = prepare_dataset()
     print(f"Dataset successfully prepared:\n  Train: {paths['train_path']}\n  Test:  {paths['test_path']}")
+

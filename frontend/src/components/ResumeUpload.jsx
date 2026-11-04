@@ -9,8 +9,11 @@ export default function ResumeUpload({ selectedFile, setSelectedFile, error, set
     setError('');
     if (!file) return;
 
-    if (!file.name.toLowerCase().endsWith('.pdf') && !file.type.includes('pdf')) {
-      setError('Please upload a valid PDF document (.pdf).');
+    const isPdf = file.name.toLowerCase().endsWith('.pdf') || file.type.includes('pdf');
+    const isDocx = file.name.toLowerCase().endsWith('.docx') || file.type.includes('word') || file.type.includes('officedocument');
+
+    if (!isPdf && !isDocx) {
+      setError('Please upload a valid PDF (.pdf) or Word (.docx) document.');
       return;
     }
 
@@ -46,10 +49,6 @@ export default function ResumeUpload({ selectedFile, setSelectedFile, error, set
     <div className="w-full max-w-2xl mx-auto text-center space-y-6">
       {/* Hero Header */}
       <div className="space-y-3">
-        <span className="inline-flex items-center px-3.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200 shadow-xs">
-          <Sparkles className="w-3.5 h-3.5 mr-1.5 text-amber-500" /> AI-Powered Resume Analysis
-        </span>
-
         <h1 className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight">
           AI Resume Reviewer
         </h1>
@@ -88,7 +87,7 @@ export default function ResumeUpload({ selectedFile, setSelectedFile, error, set
         <input
           ref={fileInputRef}
           type="file"
-          accept=".pdf,application/pdf"
+          accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
           onChange={(e) => handleFileChange(e.target.files[0])}
           className="hidden"
         />
@@ -101,18 +100,31 @@ export default function ResumeUpload({ selectedFile, setSelectedFile, error, set
             <div>
               <p className="font-bold text-slate-900 text-base">{selectedFile.name}</p>
               <p className="text-xs text-slate-500 mt-0.5">
-                {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB PDF Document
+                {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB Document
               </p>
             </div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelectedFile(null);
-              }}
-              className="mt-2 text-xs font-semibold text-rose-700 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-xl border border-rose-200 transition-colors inline-flex items-center space-x-1 cursor-pointer shadow-xs"
-            >
-              <X className="w-3.5 h-3.5 mr-1" /> Remove PDF
-            </button>
+            <div className="flex items-center gap-2 mt-2">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+                className="text-xs font-semibold text-indigo-700 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-xl border border-indigo-200 transition-colors inline-flex items-center space-x-1 cursor-pointer shadow-xs"
+              >
+                Change Resume
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedFile(null);
+                }}
+                className="text-xs font-semibold text-rose-700 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-xl border border-rose-200 transition-colors inline-flex items-center space-x-1 cursor-pointer shadow-xs"
+              >
+                <X className="w-3.5 h-3.5 mr-1" /> Remove Document
+              </button>
+            </div>
           </div>
         ) : (
           <div className="flex flex-col items-center space-y-4">
@@ -121,14 +133,14 @@ export default function ResumeUpload({ selectedFile, setSelectedFile, error, set
             </div>
             <div>
               <p className="text-base sm:text-lg font-bold text-slate-900">
-                Drag & drop your resume PDF here
+                Drag & drop your resume (PDF or Word) here
               </p>
               <p className="text-sm text-slate-500 mt-1">or click to browse your files</p>
             </div>
             <div className="inline-flex items-center px-5 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-md shadow-indigo-600/20 hover:bg-indigo-700 transition-colors">
               Browse Resume
             </div>
-            <p className="text-xs text-slate-400">PDF files up to 10 MB</p>
+            <p className="text-xs text-slate-400">PDF or DOCX files up to 10 MB</p>
           </div>
         )}
       </div>

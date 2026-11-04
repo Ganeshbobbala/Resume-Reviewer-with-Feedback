@@ -76,3 +76,4 @@ if __name__ == "__main__":
     print(f"Schema Validity Rate: {res['metrics']['schema_validity_rate']}")
     print(f"Non-Fabrication Compliance: {res['metrics']['non_fabrication_compliance_rate']}")
     print(f"Skill Gap Accuracy: {res['metrics']['skill_gap_identification_accuracy']}")
+

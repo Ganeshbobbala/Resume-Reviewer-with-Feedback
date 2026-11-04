@@ -136,3 +136,4 @@ def test_graceful_degradation_on_malformed_job_description():
 
 if __name__ == "__main__":
     pytest.main(["-v", __file__])
+

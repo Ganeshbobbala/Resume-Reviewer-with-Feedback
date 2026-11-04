@@ -3,8 +3,9 @@ const fs = require('fs');
 const path = require('path');
 
 const rootDir = path.resolve(__dirname, '..');
-const venvPythonWin = path.join(rootDir, 'backend', 'venv', 'Scripts', 'python.exe');
-const venvPythonUnix = path.join(rootDir, 'backend', 'venv', 'bin', 'python');
+const backendDir = path.join(rootDir, 'backend');
+const venvPythonWin = path.join(backendDir, 'venv', 'Scripts', 'python.exe');
+const venvPythonUnix = path.join(backendDir, 'venv', 'bin', 'python');
 
 let pythonBin = 'python';
 if (process.platform === 'win32' && fs.existsSync(venvPythonWin)) {
@@ -16,18 +17,17 @@ if (process.platform === 'win32' && fs.existsSync(venvPythonWin)) {
 const args = [
   '-m', 'uvicorn',
   'main:app',
-  '--app-dir', path.join(rootDir, 'backend'),
   '--host', '127.0.0.1',
   '--port', '8000',
   '--reload'
 ];
 
-console.log(`[Backend Runner] Launching FastAPI using ${pythonBin}...`);
+console.log(`[Backend Runner] Launching FastAPI from ${backendDir} using ${pythonBin}...`);
 
 const child = spawn(pythonBin, args, {
-  cwd: rootDir,
+  cwd: backendDir,
   stdio: 'inherit',
-  shell: true
+  shell: false
 });
 
 child.on('error', (err) => {

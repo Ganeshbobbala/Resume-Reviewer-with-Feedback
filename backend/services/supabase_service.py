@@ -35,10 +35,11 @@ def save_resume_review(review_data: Dict[str, Any], auth_token: Optional[str] = 
     """
     Saves resume analysis details and feedback into Supabase 'resume_reviews' table.
     Redacts PII from stored raw text and associates user_id if provided.
+    Falls back to local SQLite database when Supabase credentials are not provided.
     """
     if not SUPABASE_URL or not SUPABASE_KEY:
-        logger.warning("Supabase URL or Key not set. Skipping database store.")
-        return None
+        from services.local_db import save_local_review
+        return save_local_review(review_data)
 
     endpoint = f"{SUPABASE_URL}/rest/v1/resume_reviews"
     raw_text_clean = redact_pii(review_data.get("raw_text", ""))[:4000]
@@ -81,11 +82,12 @@ def save_resume_review(review_data: Dict[str, Any], auth_token: Optional[str] = 
 
 def get_recent_reviews(limit: int = 20, user_id: Optional[str] = None, auth_token: Optional[str] = None) -> List[Dict[str, Any]]:
     """
-    Fetches the latest stored reviews from Supabase.
+    Fetches the latest stored reviews from Supabase or local SQLite fallback.
     Filters by user_id if provided.
     """
     if not SUPABASE_URL or not SUPABASE_KEY:
-        return []
+        from services.local_db import get_local_reviews
+        return get_local_reviews(limit=limit, user_id=user_id)
 
     endpoint = f"{SUPABASE_URL}/rest/v1/resume_reviews?select=id,created_at,filename,target_role,predicted_category,overall_score,detected_skills&order=created_at.desc&limit={limit}"
     if user_id:
@@ -104,11 +106,12 @@ def get_recent_reviews(limit: int = 20, user_id: Optional[str] = None, auth_toke
 
 def get_review_by_id(review_id: str, user_id: Optional[str] = None, auth_token: Optional[str] = None) -> Optional[Dict[str, Any]]:
     """
-    Fetches full review details by ID from Supabase.
+    Fetches full review details by ID from Supabase or local SQLite fallback.
     Ensures user ownership check if user_id is provided.
     """
     if not SUPABASE_URL or not SUPABASE_KEY:
-        return None
+        from services.local_db import get_local_review_by_id
+        return get_local_review_by_id(review_id, user_id=user_id)
 
     endpoint = f"{SUPABASE_URL}/rest/v1/resume_reviews?id=eq.{review_id}&select=*"
     if user_id:
@@ -128,10 +131,11 @@ def get_review_by_id(review_id: str, user_id: Optional[str] = None, auth_token: 
 
 def delete_review_by_id(review_id: str, user_id: Optional[str] = None, auth_token: Optional[str] = None) -> bool:
     """
-    Deletes a review record by ID from Supabase with user ownership enforcement.
+    Deletes a review record by ID from Supabase or local SQLite fallback with user ownership enforcement.
     """
     if not SUPABASE_URL or not SUPABASE_KEY:
-        return False
+        from services.local_db import delete_local_review
+        return delete_local_review(review_id, user_id=user_id)
 
     endpoint = f"{SUPABASE_URL}/rest/v1/resume_reviews?id=eq.{review_id}"
     if user_id:
